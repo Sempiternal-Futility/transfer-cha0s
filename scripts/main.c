@@ -27,7 +27,7 @@ int main()
       client->sin_port = htons(9898);
    }
 
-   connect_hosts(is_server, *server, *client);
+   connect_hosts(is_server, *server, *client); // Here I dereference the structs because I can't "bind()" the server struct as a pointer :(
 
    getch();
 

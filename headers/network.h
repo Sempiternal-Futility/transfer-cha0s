@@ -112,8 +112,48 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
 void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in client) // Handles connections of the hosts
 {
    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+   bool client_send; // This bool determines if the client wants to send or recv a file
 
-   if (is_server == true)
+   if (is_server == false)
+   {
+      if (connect(sockfd, (struct sockaddr *)&server, sizeof(server)) < 0){
+         move(LINES /2, (COLS /2 -8));
+         fprintf(stderr, "ERROR ON CONNECT!\n");
+         getch();
+         endwin();
+         exit(1);
+      }
+
+      else
+      {
+         clear();
+         move(LINES /2, (COLS /2 -12));
+         printw("CONNECTED TO THE SERVER!");
+
+         move((LINES /2 +1), (COLS /2 -20));
+         printw("WOULD YOU LIKE TO SEND OR RECEIVE A FILE? (y/n)");
+         refresh();
+
+         char input = getch();
+
+         if (input == 'y')
+            client_send = true;
+
+         else if (input == 'n')
+            client_send = false;
+
+         char buffer[1];
+         if (client_send == true)
+            buffer[0] = '1';
+
+         else if (client_send == false)
+            buffer[0] = '0';
+
+         send(sockfd, buffer, sizeof(buffer), 0);
+      }
+   }
+
+   else if (is_server == true)
    {
       if (bind(sockfd, (struct sockaddr *)&server, sizeof(server)) < 0){
          move(LINES /2, (COLS /2 -7));
@@ -130,28 +170,38 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
       *size = sizeof(client);
       int sockfd_client = accept(sockfd, (struct sockaddr *)&client, size);
 
-      char buffer[255];
-      clear(); move(LINES /2, (COLS /2 -9)); printw("WAITING FOR RECV...");
-      recv(sockfd_client, buffer, sizeof(buffer), 0);
+      if (sockfd_client != -1)
+      {
+         clear();
+         move(LINES /2, (COLS /2 -8));
+         printw("CLIENT CONNECTED!");
 
-      printw("%s\n", buffer);
+         move((LINES /2 +1), (COLS /2 -14));
+         printw("WAITING FOR CLIENT'S INPUT...");
+         refresh();
+
+         char buffer[1];
+         recv(sockfd_client, buffer, sizeof(buffer), 0);
+      
+         if (buffer[0] == '1')
+         {
+            clear();
+            move(LINES /2, (COLS /2 -10));
+            printw("CLIENT WANTS TO SEND!");
+            refresh(); 
+         }
+
+         else if (buffer[0] == '0')
+         {
+            clear();
+            move(LINES /2, (COLS /2 -10));
+            printw("CLIENT WANTS TO RECEIVE!");
+            refresh(); 
+         }
+      }
 
       close(sockfd_client);
       free(size);
-   }
-
-   else if (is_server == false)
-   {
-      if (connect(sockfd, (struct sockaddr *)&server, sizeof(server)) < 0){
-         move(LINES /2, (COLS /2 -8));
-         fprintf(stderr, "ERROR ON CONNECT!\n");
-         getch();
-         endwin();
-         exit(1);
-      }
-
-      char buffer[255] = "hello-there";
-      send(sockfd, buffer, sizeof(buffer), 0);
    }
 
    close(sockfd);
