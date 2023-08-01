@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <ncurses.h>
+#include <string.h>
+#include <sys/stat.h>
 
 bool ask_host_type() // Asks if the host is a server or a client
 {
@@ -109,9 +111,76 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
    noecho();
 }
 
+void server_send(int sockfd) // Server chooses a file to send to the client
+{
+   echo();
+   clear();
+   move(LINES /2, (COLS /2 -12));
+   printw("CLIENT WANTS TO RECEIVE!");
+   refresh(); 
+  
+   move((LINES /2 +1), (COLS /2 -16));
+   printw("TYPE THE PATH OF A FILE TO SEND:");
+
+   move((LINES /2 +3), (COLS /2 -16));
+   char input;
+   char path[255];
+   for (short i = 0; i < 255; i++)
+   {
+      input = getch();
+      if (input == '\n'){
+         path[i] = NULL;  // Takes the \0 terminating string character out
+         break;
+      }
+
+      path[i] = input;
+   }
+
+   FILE *file = fopen(path, "r");
+
+   struct stat st;
+   stat(path, &st);
+   long file_size = st.st_size;
+
+   char buffer[file_size];
+   char tmp_buffer[file_size];
+   for (long i = 0; i < file_size; i++) // Makes sure both strings are NULL
+   {
+      buffer[i] = NULL;
+      tmp_buffer[i] = NULL;
+   }
+
+   while (!feof(file))
+   {
+      strcat(buffer, tmp_buffer);
+      fgets(tmp_buffer, sizeof(tmp_buffer), file);
+   }
+
+   char file_size_buf[255] = "";
+   snprintf(file_size_buf, sizeof(file_size_buf), "%ld", file_size);
+   for (short i = 0; i < file_size; i++) // Takes the \0 out
+   {
+      if (file_size_buf[i] == '\0'){
+         file_size_buf[i] = NULL;
+         break;
+      }
+   }
+
+   clear(); printw(buffer); refresh(); // Debugging purposes (REMOVE LATER)
+   
+   send(sockfd, file_size_buf, sizeof(file_size_buf), 0); // Sends file size info for the client
+   send(sockfd, buffer, sizeof(buffer), 0); // Sends the actual file for the client
+
+   noecho();
+}
+
 void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in client) // Handles connections of the hosts
 {
    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+
+   const int enable = 1;
+   setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)); // Allows the TCP socket to be reused
+
    bool client_send; // This bool determines if the client wants to send or recv a file
 
    if (is_server == false)
@@ -150,6 +219,29 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
             buffer[0] = '0';
 
          send(sockfd, buffer, sizeof(buffer), 0);
+
+         if (client_send == false)
+         {
+            clear();
+            move(LINES /2, (COLS /2 -18));
+            printw("SERVER IS CHOOSING A FILE TO SEND...");
+            refresh();
+
+            char file_size_buf[255];
+            recv(sockfd, file_size_buf, sizeof(file_size_buf), 0); // Receives the file size from the server
+            long file_size = atol(file_size_buf);
+
+            char file_buf[file_size];
+            for (long i = 0; i < sizeof(file_buf); i++) // Makes sure the buffer is empty
+               file_buf[i] = NULL;
+
+            recv(sockfd, file_buf, sizeof(file_buf), 0);
+
+            clear(); printw(file_buf); refresh(); // Debugging purposes (REMOVE LATER)
+
+            FILE *file = fopen("./file", "w");
+            fprintf(file, file_buf);
+         }
       }
    }
 
@@ -192,12 +284,7 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
          }
 
          else if (buffer[0] == '0')
-         {
-            clear();
-            move(LINES /2, (COLS /2 -10));
-            printw("CLIENT WANTS TO RECEIVE!");
-            refresh(); 
-         }
+         server_send(sockfd_client);
       }
 
       close(sockfd_client);

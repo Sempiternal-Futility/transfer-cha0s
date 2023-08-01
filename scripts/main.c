@@ -6,6 +6,8 @@
 #include <stdbool.h>
 #include "../headers/network.h" // This header contains all of these networking functions
 
+//TODO: Fix file_buf in client-size (is corrupted)
+
 int main()
 {
    setlocale(LC_ALL, "");
