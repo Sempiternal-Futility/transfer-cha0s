@@ -160,11 +160,16 @@ void server_send(int sockfd) // Server chooses a file to send to the client
       tmp_buffer[i] = NULL;
    }
 
-   while (!feof(file))
+   if (ascii == true)
    {
-      strcat(buffer, tmp_buffer);
-      fgets(tmp_buffer, sizeof(tmp_buffer), file);
+      while (!feof(file)){
+         strcat(buffer, tmp_buffer);
+         fgets(tmp_buffer, sizeof(tmp_buffer), file);
+      }
    }
+
+   else if (ascii == false)
+      fread(buffer, file_size, 1, file);
 
    char file_size_buf[255] = "";
    snprintf(file_size_buf, sizeof(file_size_buf), "%ld", file_size);
@@ -178,7 +183,7 @@ void server_send(int sockfd) // Server chooses a file to send to the client
 
    clear(); printw(buffer); refresh(); // Debugging purposes (REMOVE LATER)
   
-   send(sockfd, path_buf, sizeof (path_buf), 0);
+   send(sockfd, path_buf, sizeof (path_buf), 0); // Sends the path of the file to the client
    send(sockfd, file_size_buf, sizeof(file_size_buf), 0); // Sends file size info for the client
    send(sockfd, buffer, sizeof(buffer), 0); // Sends the actual file for the client
 
@@ -239,7 +244,7 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
             refresh();
 
             char file_size_buf[255];
-            char path[255];
+            char path[510];
             recv(sockfd, path, sizeof(path), 0); // Receives the path of the file
             recv(sockfd, file_size_buf, sizeof(file_size_buf), 0); // Receives the file size from the server
             long file_size = atol(file_size_buf);
@@ -251,7 +256,6 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
             recv(sockfd, file_buf, sizeof(file_buf), 0);
 
             clear(); printw(file_buf); refresh(); // Debugging purposes (REMOVE LATER)
-
 
             bool ascii = is_file_ascii(path);
             char *mode;
@@ -266,7 +270,7 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
                fprintf(file, file_buf);
 
             else if (ascii == false)
-               fwrite(file_buf, sizeof(file_buf), 1, file);
+               fwrite(file_buf, file_size, 1, file);
          }
       }
    }
