@@ -8,6 +8,7 @@
 #include <ncurses.h>
 #include <string.h>
 #include <sys/stat.h>
+#include "funcs.h"
 
 bool ask_host_type() // Asks if the host is a server or a client
 {
@@ -136,7 +137,16 @@ void server_send(int sockfd) // Server chooses a file to send to the client
       path[i] = input;
    }
 
-   FILE *file = fopen(path, "r");
+   bool ascii = is_file_ascii(path);
+   char *mode;
+
+   if (ascii == true)
+      mode = "r";
+   else if (ascii == false)
+      mode = "rb";
+
+   FILE *file = fopen(path, mode);
+   char *path_buf = path;
 
    struct stat st;
    stat(path, &st);
@@ -167,7 +177,8 @@ void server_send(int sockfd) // Server chooses a file to send to the client
    }
 
    clear(); printw(buffer); refresh(); // Debugging purposes (REMOVE LATER)
-   
+  
+   send(sockfd, path_buf, sizeof (path_buf), 0);
    send(sockfd, file_size_buf, sizeof(file_size_buf), 0); // Sends file size info for the client
    send(sockfd, buffer, sizeof(buffer), 0); // Sends the actual file for the client
 
@@ -228,6 +239,8 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
             refresh();
 
             char file_size_buf[255];
+            char path[255];
+            recv(sockfd, path, sizeof(path), 0); // Receives the path of the file
             recv(sockfd, file_size_buf, sizeof(file_size_buf), 0); // Receives the file size from the server
             long file_size = atol(file_size_buf);
 
@@ -239,8 +252,21 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
 
             clear(); printw(file_buf); refresh(); // Debugging purposes (REMOVE LATER)
 
-            FILE *file = fopen("./file", "w");
-            fprintf(file, file_buf);
+
+            bool ascii = is_file_ascii(path);
+            char *mode;
+
+            if (ascii == true)
+               mode = "w";
+            else if (ascii == false)
+               mode = "wb";
+
+            FILE *file = fopen("./file", mode);
+            if (ascii == true)
+               fprintf(file, file_buf);
+
+            else if (ascii == false)
+               fwrite(file_buf, sizeof(file_buf), 1, file);
          }
       }
    }
