@@ -6,7 +6,9 @@
 #include <stdbool.h>
 #include "../headers/network.h" // This header contains all of these networking functions
 
-//TODO: Fix file_buf in client-size (is corrupted)
+//TODO: Fix file_buf in client-size (is corrupted for ascii files)
+//      Use "is_file_ascii()" on server-side and send the bool instead of the path
+//      break the for loop in "is_file_ascii" after knowing for sure the file type
 
 int main()
 {

@@ -28,14 +28,13 @@ bool is_file_ascii(char *path)
    read(pipefd[0], buf, 100);
 
    bool ascii = false;
-   for (int i = 0; i < strlen(buf); i++)
+   for (size_t i = 0; i < strlen(buf); i++)
    {
-      if (buf[i] == 'A')
-         if (buf[i+1] == 'S')
-            if (buf[i+2] == 'C')
-               if (buf[i+3] == 'I')
-                  if (buf[i+4] == 'I')
-                     ascii = true;
+      if (buf[i] == 't')
+         if (buf[i+1] == 'e')
+            if (buf[i+2] == 'x')
+               if (buf[i+3] == 't')
+                  ascii = true;
    }
 
    return ascii;

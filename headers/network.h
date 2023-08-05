@@ -73,9 +73,10 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
    {
       input = getch();
       if (input == '\n'){
-         ip_addr_string[i] = NULL; // Takes the \0 terminating string character out
+         ip_addr_string[i] = 0; // Takes the \0 terminating string character out
          break;
       }
+
       ip_addr_string[i] = input;
    }
 
@@ -100,7 +101,7 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
       {
          input = getch();
          if (input == '\n'){
-            ip_addr_string[i] = NULL; // Takes the \0 terminating string character out
+            ip_addr_string[i] = 0; // Takes the \0 terminating string character out
             break;
          }
          ip_addr_string_two[i] = input;
@@ -125,12 +126,12 @@ void server_send(int sockfd) // Server chooses a file to send to the client
 
    move((LINES /2 +3), (COLS /2 -16));
    char input;
-   char path[255];
+   char path[510];
    for (short i = 0; i < 255; i++)
    {
       input = getch();
       if (input == '\n'){
-         path[i] = NULL;  // Takes the \0 terminating string character out
+         path[i] = 0;  // Takes the \0 terminating string character out
          break;
       }
 
@@ -150,14 +151,14 @@ void server_send(int sockfd) // Server chooses a file to send to the client
 
    struct stat st;
    stat(path, &st);
-   long file_size = st.st_size;
+   size_t file_size = st.st_size;
 
    char buffer[file_size];
    char tmp_buffer[file_size];
-   for (long i = 0; i < file_size; i++) // Makes sure both strings are NULL
+   for (size_t i = 0; i < file_size; i++) // Makes sure both strings are NULL
    {
-      buffer[i] = NULL;
-      tmp_buffer[i] = NULL;
+      buffer[i] = 0;
+      tmp_buffer[i] = 0;
    }
 
    if (ascii == true)
@@ -171,21 +172,34 @@ void server_send(int sockfd) // Server chooses a file to send to the client
    else if (ascii == false)
       fread(buffer, file_size, 1, file);
 
-   char file_size_buf[255] = "";
-   snprintf(file_size_buf, sizeof(file_size_buf), "%ld", file_size);
-   for (short i = 0; i < file_size; i++) // Takes the \0 out
+   char file_size_buf[sizeof(size_t)];
+   for (size_t i = 0; i < sizeof(file_size_buf); i++) // Makes sure the string is NULL
+      file_size_buf[i] = 0;
+
+   snprintf(file_size_buf, sizeof(file_size_buf), "%zu", file_size);
+
+   send(sockfd, path_buf, sizeof(path_buf), 0); // Sends the path of the file to the client
+   sleep(0.05);
+   send(sockfd, file_size_buf, sizeof(file_size_buf), 0); // Sends file size info for the client
+  
+   long n = 0;
+   size_t total = 0;
+   while (total < file_size)
    {
-      if (file_size_buf[i] == '\0'){
-         file_size_buf[i] = NULL;
+      n = send(sockfd, buffer, file_size, 0); // Sends the actual file for the client
+      total = total + n;
+
+      if (n == -1){
+         perror("send() error"); 
+         getch();
          break;
       }
    }
 
-   clear(); printw(buffer); refresh(); // Debugging purposes (REMOVE LATER)
-  
-   send(sockfd, path_buf, sizeof (path_buf), 0); // Sends the path of the file to the client
-   send(sockfd, file_size_buf, sizeof(file_size_buf), 0); // Sends file size info for the client
-   send(sockfd, buffer, sizeof(buffer), 0); // Sends the actual file for the client
+   clear();
+   move(LINES /2, (COLS /2 -6));
+   printw("Bytes sent: %zu\n", total);
+   getch();
 
    noecho();
 }
@@ -243,19 +257,35 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
             printw("SERVER IS CHOOSING A FILE TO SEND...");
             refresh();
 
-            char file_size_buf[255];
+            char file_size_buf[sizeof(size_t)];
             char path[510];
             recv(sockfd, path, sizeof(path), 0); // Receives the path of the file
             recv(sockfd, file_size_buf, sizeof(file_size_buf), 0); // Receives the file size from the server
-            long file_size = atol(file_size_buf);
+            size_t file_size = atol(file_size_buf);
 
             char file_buf[file_size];
-            for (long i = 0; i < sizeof(file_buf); i++) // Makes sure the buffer is empty
-               file_buf[i] = NULL;
+            for (long unsigned int i = 0; i < sizeof(file_buf); i++) // Makes sure the buffer is empty
+               file_buf[i] = 0;
 
-            recv(sockfd, file_buf, sizeof(file_buf), 0);
+            long n = 0;
+            size_t total = 0;
+            clear(); printw("file size: %zu\n", file_size); getch(); // Debug (REMOVE LATER)
+            while (total < file_size)
+            {
+               n = recv(sockfd, file_buf, file_size, 0);
+               total = total + n;
 
-            clear(); printw(file_buf); refresh(); // Debugging purposes (REMOVE LATER)
+               if (n == -1){
+                  perror("recv(): error");
+                  getchar();
+                  break;
+               }
+            }
+
+            clear();
+            move(LINES /2, (COLS /2 -6));
+            printw("Bytes recv: %zu\n", total);
+            getch();
 
             bool ascii = is_file_ascii(path);
             char *mode;
