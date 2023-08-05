@@ -179,14 +179,14 @@ void server_send(int sockfd) // Server chooses a file to send to the client
    snprintf(file_size_buf, sizeof(file_size_buf), "%zu", file_size);
 
    send(sockfd, path_buf, sizeof(path_buf), 0); // Sends the path of the file to the client
-   sleep(0.05);
+   sleep(0.06); // This sleep is here to make sure the client has time to prepare for recving
    send(sockfd, file_size_buf, sizeof(file_size_buf), 0); // Sends file size info for the client
   
    long n = 0;
    size_t total = 0;
    while (total < file_size)
    {
-      n = send(sockfd, buffer, file_size, 0); // Sends the actual file for the client
+      n = send(sockfd, &buffer[total], file_size, 0); // Sends the actual file for the client
       total = total + n;
 
       if (n == -1){
@@ -269,10 +269,9 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
 
             long n = 0;
             size_t total = 0;
-            clear(); printw("file size: %zu\n", file_size); getch(); // Debug (REMOVE LATER)
             while (total < file_size)
             {
-               n = recv(sockfd, file_buf, file_size, 0);
+               n = recv(sockfd, &file_buf[total], file_size, 0);
                total = total + n;
 
                if (n == -1){
