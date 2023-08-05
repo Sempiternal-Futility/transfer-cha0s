@@ -179,7 +179,7 @@ void server_send(int sockfd) // Server chooses a file to send to the client
    snprintf(file_size_buf, sizeof(file_size_buf), "%zu", file_size);
 
    send(sockfd, path_buf, sizeof(path_buf), 0); // Sends the path of the file to the client
-   sleep(0.06); // This sleep is here to make sure the client has time to prepare for recving
+   system("sleep 0.005s"); // This sleep is here to make sure the client has time to prepare for recving
    send(sockfd, file_size_buf, sizeof(file_size_buf), 0); // Sends file size info for the client
   
    long n = 0;
