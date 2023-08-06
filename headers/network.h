@@ -147,7 +147,6 @@ void server_send(int sockfd) // Server chooses a file to send to the client
       mode = "rb";
 
    FILE *file = fopen(path, mode);
-   char *path_buf = path;
 
    struct stat st;
    stat(path, &st);
@@ -178,7 +177,13 @@ void server_send(int sockfd) // Server chooses a file to send to the client
 
    snprintf(file_size_buf, sizeof(file_size_buf), "%zu", file_size);
 
-   send(sockfd, path_buf, sizeof(path_buf), 0); // Sends the path of the file to the client
+   char ascii_buf[1];
+   if (ascii == true)
+      ascii_buf[0] = '1';
+   else if (ascii == false)
+      ascii_buf[0] = '0';
+
+   send(sockfd, ascii_buf, sizeof(ascii_buf), 0); // Sends the ascii bool to the client
    system("sleep 0.005s"); // This sleep is here to make sure the client has time to prepare for recving
    send(sockfd, file_size_buf, sizeof(file_size_buf), 0); // Sends file size info for the client
   
@@ -258,8 +263,8 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
             refresh();
 
             char file_size_buf[sizeof(size_t)];
-            char path[510];
-            recv(sockfd, path, sizeof(path), 0); // Receives the path of the file
+            char ascii_buf[1];
+            recv(sockfd, ascii_buf, sizeof(ascii_buf), 0); // Receives the ascii bool
             recv(sockfd, file_size_buf, sizeof(file_size_buf), 0); // Receives the file size from the server
             size_t file_size = atol(file_size_buf);
 
@@ -286,7 +291,12 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
             printw("Bytes recv: %zu\n", total);
             getch();
 
-            bool ascii = is_file_ascii(path);
+            bool ascii;
+            if (ascii_buf[0] == '1')
+               ascii = true;
+            else if (ascii_buf[0] == '0')
+               ascii = false;
+
             char *mode;
 
             if (ascii == true)
