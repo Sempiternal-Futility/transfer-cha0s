@@ -8,6 +8,7 @@
 #include <ncurses.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <libgen.h>
 #include "funcs.h"
 
 bool ask_host_type() // Asks if the host is a server or a client
@@ -138,6 +139,7 @@ void server_send(int sockfd) // Server chooses a file to send to the client
       path[i] = input;
    }
 
+   char *file_name = basename(path);
    bool ascii = is_file_ascii(path);
    char *mode;
 
@@ -184,6 +186,7 @@ void server_send(int sockfd) // Server chooses a file to send to the client
       ascii_buf[0] = '0';
 
    send(sockfd, ascii_buf, sizeof(ascii_buf), 0); // Sends the ascii bool to the client
+   send(sockfd, file_name, sizeof(file_name), 0); // Sends the name of the file
    system("sleep 0.005s"); // This sleep is here to make sure the client has time to prepare for recving
    send(sockfd, file_size_buf, sizeof(file_size_buf), 0); // Sends file size info for the client
   
@@ -264,7 +267,9 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
 
             char file_size_buf[sizeof(size_t)];
             char ascii_buf[1];
+            char file_name[255];
             recv(sockfd, ascii_buf, sizeof(ascii_buf), 0); // Receives the ascii bool
+            recv(sockfd, file_name, sizeof(file_name), 0); // Receives the file name
             recv(sockfd, file_size_buf, sizeof(file_size_buf), 0); // Receives the file size from the server
             size_t file_size = atol(file_size_buf);
 
@@ -304,7 +309,7 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
             else if (ascii == false)
                mode = "wb";
 
-            FILE *file = fopen("./file", mode);
+            FILE *file = fopen(file_name, mode);
             if (ascii == true)
                fprintf(file, file_buf);
 
