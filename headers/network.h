@@ -1,4 +1,7 @@
-// This header file contains a bunch of networking functions
+// This header file contains functions that handle networking
+
+#ifndef NETWORK_H
+#define NETWORK_H
 
 #include <stdio.h>
 #include <sys/socket.h>
@@ -9,94 +12,59 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <libgen.h>
-#include "funcs.h"
+#include "info.h"
+#include "style.h"
 
-bool ask_host_type() // Asks if the host is a server or a client
+void server_send(int sockfd);
+void client_recv(int sockfd);
+
+void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in client)
 {
-   clear();
-   print_center("IS THIS MACHINE A SERVER?", 0, 25);
-   print_center("(y/n)", 1, 5);
+   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
-   char answer = getch();
-   switch(answer)
+   const int enable = 1;
+   setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)); // Allows the TCP socket to be reused
+
+   if (is_server == false)
    {
-      case 'y':
-         return true;
-         break;
-
-      case 'Y':
-         return true;
-         break;
-
-      case 'n':
-         return false;
-         break;
-
-      case 'N':
-         return false;
-         break;
-
-      default:
-         ask_host_type(); // Loop function
-   }
-}
-
-void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr_in *client) // Gets the IPv4 address of the host
-{
-   clear();
-   echo();
-
-   if (is_server == true)
-      print_center("WHAT IS THE IP ADDRESS OF THIS MACHINE?", 0, 39);
-   
-   else
-      print_center("WHAT IS THE IP ADDRESS OF THE SERVER?", 0, 37);
-
-   print_center("(IPv4)", 1, 6);
-
-   move((LINES /2 +3), (COLS /2 -6));
-
-   char input = ' ';
-   char ip_addr_string[16];
-
-   for (short i = 0; i < 16; i++) // Fills the array with the ip address
-   {
-      input = getch();
-      if (input == '\n'){
-         ip_addr_string[i] = 0; // Takes the \0 terminating string character out
-         break;
+      if (connect(sockfd, (struct sockaddr *)&server, sizeof server) < 0) {
+         move(LINES /2, (COLS /2 -8));
+         fprintf(stderr, "ERROR ON CONNECT!\n");
+         getch();
+         endwin();
+         exit(1);
       }
 
-      ip_addr_string[i] = input;
+      else
+         client_recv(sockfd);
    }
 
-   inet_pton(AF_INET, ip_addr_string, &(server->sin_addr));
-
-   if (is_server == true) // If the host is a server, this will ask the ip of the client too
+   else if (is_server == true)
    {
-      clear();
-      print_center("WHAT IS THE IP ADDRESS OF THE CLIENT?", 0, 37);
-      print_center("(IPv4)", 1, 6);
-
-      move((LINES /2 +3), (COLS /2 -6));
-   
-      input = ' ';
-      char ip_addr_string_two[16];
-
-      for (short i = 0; i < 16; i++)
-      {
-         input = getch();
-         if (input == '\n'){
-            ip_addr_string[i] = 0; // Takes the \0 terminating string character out
-            break;
-         }
-         ip_addr_string_two[i] = input;
+      if (bind(sockfd, (struct sockaddr *)&server, sizeof server) < 0) {
+         move(LINES /2, (COLS /2 -7));
+         fprintf(stderr, "ERROR ON BIND!\n");
+         getch();
+         endwin();
+         exit(1);
       }
 
-      inet_pton(AF_INET, ip_addr_string_two, &(client->sin_addr));
+      clear(); 
+      print_center("WAITING FOR CLIENT TO CONNECT...", 0, 32);
+      listen(sockfd, 1);
+
+      socklen_t *size = malloc(sizeof(socklen_t));
+      *size = sizeof(client);
+      int sockfd_client = accept(sockfd, (struct sockaddr *)&client, size);
+
+      if (sockfd_client != -1)
+         server_send(sockfd_client);
+
+      close(sockfd_client);
+      free(size);
    }
 
-   noecho();
+   close(sockfd);
 }
 
 void server_send(int sockfd)
@@ -253,51 +221,4 @@ void client_recv(int sockfd)
       fwrite(file_data, file_size, 1, file);
 }
 
-void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in client) // Handles connections of the hosts
-{
-   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-
-   const int enable = 1;
-   setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)); // Allows the TCP socket to be reused
-
-   if (is_server == false)
-   {
-      if (connect(sockfd, (struct sockaddr *)&server, sizeof server) < 0) {
-         move(LINES /2, (COLS /2 -8));
-         fprintf(stderr, "ERROR ON CONNECT!\n");
-         getch();
-         endwin();
-         exit(1);
-      }
-
-      else
-         client_recv(sockfd);
-   }
-
-   else if (is_server == true)
-   {
-      if (bind(sockfd, (struct sockaddr *)&server, sizeof server) < 0) {
-         move(LINES /2, (COLS /2 -7));
-         fprintf(stderr, "ERROR ON BIND!\n");
-         getch();
-         endwin();
-         exit(1);
-      }
-
-      clear(); 
-      print_center("WAITING FOR CLIENT TO CONNECT...", 0, 32);
-      listen(sockfd, 1);
-
-      socklen_t *size = malloc(sizeof(socklen_t));
-      *size = sizeof(client);
-      int sockfd_client = accept(sockfd, (struct sockaddr *)&client, size);
-
-      if (sockfd_client != -1)
-         server_send(sockfd_client);
-
-      close(sockfd_client);
-      free(size);
-   }
-
-   close(sockfd);
-}
+#endif
