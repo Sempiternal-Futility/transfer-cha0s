@@ -39,3 +39,10 @@ bool is_file_ascii(char *path)
 
    return ascii;
 }
+
+void print_center(char *msg, int y, int x)
+{
+   move(LINES /2 +y, (COLS /2 -x/2));
+   printw(msg);
+   refresh();
+}

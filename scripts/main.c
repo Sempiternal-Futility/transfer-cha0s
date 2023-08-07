@@ -6,9 +6,11 @@
 #include <stdbool.h>
 #include "../headers/network.h" // This header contains all of these networking functions
 
-//TODO: Fix file_buf in client-size (is corrupted for ascii files)
+//TODO: 
+//      Remove prompt of client being able to send files to server
+//      Fix file_buf in client-size (is corrupted for ascii files)
 //      break the for loop in "is_file_ascii" after knowing for sure the file type
-//      Once i am able to copy folders, add little animation while the program is busy 
+//      Once i am able to copy folders, add little animation while the program is busy
 
 int main()
 {
