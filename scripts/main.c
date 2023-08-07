@@ -8,7 +8,6 @@
 #include "../headers/info.h"
 
 //TODO: 
-//      Fix file_buf in client-size (is corrupted for ascii files) (prolly fgetting an extra line)
 //      break the for loop in "is_file_ascii" after knowing for sure the file type
 //      Once i am able to copy folders, add little animation while the program is busy
 

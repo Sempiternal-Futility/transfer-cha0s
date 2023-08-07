@@ -117,6 +117,8 @@ void server_send(int sockfd)
          strcat(file_data, tmp_buffer);
          fgets(tmp_buffer, sizeof tmp_buffer, file);
       }
+
+      file_data[strlen(file_data) -1] = '\0'; // This fix a bug where ascii files are outputted corrupted
    }
 
    else if (is_ascii == false)
@@ -195,19 +197,24 @@ void client_recv(int sockfd)
       }
    }
 
-   clear();
-   move(LINES /2, (COLS /2 -6));
-   printw("Bytes recv: %zu\n", total);
-   getch();
-
    bool is_ascii;
    if (ascii_buffer[0] == '1')
       is_ascii = true;
    else if (ascii_buffer[0] == '0')
       is_ascii = false;
 
-   char *mode;
+   if (is_ascii == true) // These 2 lines fix a bug where ascii files are outputted corrupted
+   {
+      file_data[strlen(file_data) +1] = '\0';
+      file_data[strlen(file_data)] = '\n';
+   }
 
+   clear();
+   move(LINES /2, (COLS /2 -6));
+   printw("Bytes recv: %zu\n", total);
+   getch();
+
+   char *mode;
    if (is_ascii == true)
       mode = "w";
    else if (is_ascii == false)
