@@ -103,8 +103,8 @@ void server_send(int sockfd)
 {
    echo();
    clear();
-   print_center("CLIENT WANTS TO RECEIVE!", 0, 24);
-   print_center("TYPE THE PATH OF A FILE TO SEND:", 1, 32);
+   print_center("CLIENT CONNECTED!", 0, 17);
+   print_center("TYPE THE PATH OF A FILE TO SEND:", 1, 30);
 
    move((LINES /2 +3), (COLS /2 -16));
    char input;
@@ -112,7 +112,7 @@ void server_send(int sockfd)
    for (short i = 0; i < 255; i++)
    {
       input = getch();
-      if (input == '\n'){
+      if (input == '\n') {
          path[i] = 0;  // Takes the \0 terminating string character out
          break;
       }
@@ -193,14 +193,72 @@ void server_send(int sockfd)
    noecho();
 }
 
+void client_recv(int sockfd)
+{
+   clear();
+   print_center("CONNECTED TO THE SERVER!", 0, 24);
+   print_center("SERVER IS CHOOSING A FILE TO SEND...", 1, 34);
+
+   char ascii_buffer[1];
+   char file_name[255];
+   char file_size_buffer[sizeof(size_t)];
+
+   recv(sockfd, ascii_buffer, sizeof ascii_buffer, 0); // Receives the ascii bool
+   recv(sockfd, file_name, sizeof file_name, 0); // Receives the file name
+   recv(sockfd, file_size_buffer, sizeof file_size_buffer, 0); // Receives the file size from the server
+         
+   size_t file_size = atol(file_size_buffer);
+
+   char file_data[file_size]; // This holds the contents of the file
+   for (long unsigned int i = 0; i < sizeof file_data; i++) // Makes sure the array is empty
+      file_data[i] = 0;
+
+   long n = 0;
+   size_t total = 0;
+   while (total < file_size)
+   {
+      n = recv(sockfd, &file_data[total], file_size, 0); // Receives the file from the server
+      total = total + n;
+
+      if (n == -1) {
+         perror("recv(): error");
+         getchar();
+         break;
+      }
+   }
+
+   clear();
+   move(LINES /2, (COLS /2 -6));
+   printw("Bytes recv: %zu\n", total);
+   getch();
+
+   bool is_ascii;
+   if (ascii_buffer[0] == '1')
+      is_ascii = true;
+   else if (ascii_buffer[0] == '0')
+      is_ascii = false;
+
+   char *mode;
+
+   if (is_ascii == true)
+      mode = "w";
+   else if (is_ascii == false)
+      mode = "wb";
+
+   FILE *file = fopen(file_name, mode);
+   if (is_ascii == true)
+      fprintf(file, file_data);
+
+   else if (is_ascii == false)
+      fwrite(file_data, file_size, 1, file);
+}
+
 void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in client) // Handles connections of the hosts
 {
    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
    const int enable = 1;
    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)); // Allows the TCP socket to be reused
-
-   bool client_send; // This bool determines if the client wants to send or recv a file (remove this later)
 
    if (is_server == false)
    {
@@ -213,85 +271,7 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
       }
 
       else
-      {
-         clear();
-         print_center("CONNECTED TO THE SERVER!", 0, 24);
-         print_center("WOULD YOU LIKE TO SEND OR RECEIVE A FILE? (y/n)", 1, 40); // Remove this thing later
-
-         char input = getch();
-
-         if (input == 'y')
-            client_send = true;
-
-         else if (input == 'n')
-            client_send = false;
-
-         char buffer[1];
-         if (client_send == true)
-            buffer[0] = '1';
-
-         else if (client_send == false)
-            buffer[0] = '0';
-
-         send(sockfd, buffer, sizeof buffer, 0);
-
-         if (client_send == false)
-         {
-            clear();
-            print_center("SERVER IS CHOOSING A FILE TO SEND...", 0, 36);
-
-            char file_size_buffer[sizeof(size_t)];
-            char ascii_buffer[1];
-            char file_name[255];
-            recv(sockfd, ascii_buffer, sizeof ascii_buffer, 0); // Receives the ascii bool
-            recv(sockfd, file_name, sizeof file_name, 0); // Receives the file name
-            recv(sockfd, file_size_buffer, sizeof file_size_buffer, 0); // Receives the file size from the server
-            size_t file_size = atol(file_size_buffer);
-
-            char file_data[file_size]; // This holds the contents of the file
-            for (long unsigned int i = 0; i < sizeof file_data; i++) // Makes sure the array is empty
-               file_data[i] = 0;
-
-            long n = 0;
-            size_t total = 0;
-            while (total < file_size)
-            {
-               n = recv(sockfd, &file_data[total], file_size, 0); // Receives the file from the server
-               total = total + n;
-
-               if (n == -1) {
-                  perror("recv(): error");
-                  getchar();
-                  break;
-               }
-            }
-
-            clear();
-            move(LINES /2, (COLS /2 -6));
-            printw("Bytes recv: %zu\n", total);
-            getch();
-
-            bool is_ascii;
-            if (ascii_buffer[0] == '1')
-               is_ascii = true;
-            else if (ascii_buffer[0] == '0')
-               is_ascii = false;
-
-            char *mode;
-
-            if (is_ascii == true)
-               mode = "w";
-            else if (is_ascii == false)
-               mode = "wb";
-
-            FILE *file = fopen(file_name, mode);
-            if (is_ascii == true)
-               fprintf(file, file_data);
-
-            else if (is_ascii == false)
-               fwrite(file_data, file_size, 1, file);
-         }
-      }
+         client_recv(sockfd);
    }
 
    else if (is_server == true)
@@ -313,23 +293,7 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
       int sockfd_client = accept(sockfd, (struct sockaddr *)&client, size);
 
       if (sockfd_client != -1)
-      {
-         clear();
-         print_center("CLIENT CONNECTED!", 0, 17);
-         print_center("WAITING FOR CLIENT'S INPUT...", 1, 26);
-
-         char buffer[1];
-         recv(sockfd_client, buffer, sizeof buffer, 0);
-      
-         if (buffer[0] == '1')
-         {
-            clear();
-            print_center("CLIENT WANTS TO SEND!", 0, 21);
-         }
-
-         else if (buffer[0] == '0')
          server_send(sockfd_client);
-      }
 
       close(sockfd_client);
       free(size);
