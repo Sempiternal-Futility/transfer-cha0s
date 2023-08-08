@@ -41,7 +41,6 @@ bool ask_host_type() // Asks if the host is a server or a client
 void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr_in *client) // Gets the IPv4 address of the host
 {
    clear();
-   echo();
 
    if (is_server == true)
       print_center("WHAT IS THE IP ADDRESS OF THIS MACHINE?", 0, 39);
@@ -59,12 +58,27 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
    for (short i = 0; i < 16; i++) // Fills the array with the ip address
    {
       input = getch();
-      if (input == '\n'){
+
+      if (input == '\n') {
          ip_addr_string[i] = 0; // Takes the \0 terminating string character out
          break;
       }
 
-      ip_addr_string[i] = input;
+      else if (input == 8 || input == 127) { // Erases if backspace is pressed
+         if (i > 0) {
+            i -= 1;
+            ip_addr_string[i] = 0;
+            move(LINES /2 +3, COLS /2 -6 +i);
+            printw("%c", ' ');
+            i -= 1;
+         }
+      }
+
+      else {
+         move(LINES /2 +3, COLS /2 -6 +i);
+         printw("%c", input);
+         ip_addr_string[i] = input;
+      }
    }
 
    inet_pton(AF_INET, ip_addr_string, &(server->sin_addr));
@@ -83,17 +97,30 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
       for (short i = 0; i < 16; i++)
       {
          input = getch();
-         if (input == '\n'){
-            ip_addr_string[i] = 0; // Takes the \0 terminating string character out
+         if (input == '\n') {
+            ip_addr_string_two[i] = 0; // Takes the \0 terminating string character out
             break;
          }
-         ip_addr_string_two[i] = input;
+
+         else if (input == 8 || input == 127) {
+            if (i > 0) {
+               i -= 1;
+               ip_addr_string_two[i] = 0;
+               move(LINES /2 +3, COLS /2 -6 +i);
+               printw("%c", ' ');
+               i -= 1;
+            }
+         }
+
+         else {
+            move(LINES /2 +3, COLS /2 -6 +i);
+            printw("%c", input);
+            ip_addr_string_two[i] = input;
+         }
       }
 
       inet_pton(AF_INET, ip_addr_string_two, &(client->sin_addr));
    }
-
-   noecho();
 }
 
 bool is_file_ascii(char *path)
