@@ -72,6 +72,9 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
             printw("%c", ' ');
             i -= 1;
          }
+
+         else
+            i -= 1;
       }
 
       else {
@@ -109,7 +112,10 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
                move(LINES /2 +3, COLS /2 -6 +i);
                printw("%c", ' ');
                i -= 1;
-            }
+            }         
+
+            else
+               i -= 1;
          }
 
          else {

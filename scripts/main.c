@@ -8,7 +8,6 @@
 #include "../headers/info.h"
 
 //TODO: 
-//      Be able to erase input
 //      break the for loop in "is_file_ascii" after knowing for sure the file type
 //      Once i am able to copy folders, add little animation while the program is busy
 

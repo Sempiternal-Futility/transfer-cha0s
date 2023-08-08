@@ -69,7 +69,6 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
 
 void server_send(int sockfd)
 {
-   echo();
    clear();
    print_center("CLIENT CONNECTED!", 0, 17);
    print_center("TYPE THE PATH OF A FILE TO SEND:", 1, 30);
@@ -85,7 +84,24 @@ void server_send(int sockfd)
          break;
       }
 
-      path[i] = input;
+      else if (input == 8 || input == 127) { // Erases input if backspace is pressed
+         if (i > 0) {
+            i -= 1;
+            path[i] = 0;
+            move(LINES /2 +3, COLS /2 -16 +i);
+            printw("%c", ' ');
+            i -= 1;
+         }
+
+         else
+            i -= 1;
+      }
+
+      else {
+         move(LINES /2 +3, COLS /2 -16 +i);
+         printw("%c", input);
+         path[i] = input;
+      }
    }
 
    char *file_name = basename(path);
@@ -159,8 +175,6 @@ void server_send(int sockfd)
    move(LINES /2, (COLS /2 -6));
    printw("Bytes sent: %zu\n", total);
    getch();
-
-   noecho();
 }
 
 void client_recv(int sockfd)
