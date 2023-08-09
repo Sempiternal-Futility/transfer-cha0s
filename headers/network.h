@@ -140,12 +140,6 @@ void server_send(int sockfd)
    else if (is_ascii == false)
       fread(file_data, file_size, 1, file);
 
-   char file_size_buffer[sizeof(size_t)];
-   for (size_t i = 0; i < sizeof file_size_buffer; i++) // Makes sure the string is NULL
-      file_size_buffer[i] = 0;
-
-   snprintf(file_size_buffer, sizeof file_size_buffer, "%zu", file_size);
-
    char ascii_buffer[1];
    if (is_ascii == true)
       ascii_buffer[0] = '1';
@@ -155,7 +149,7 @@ void server_send(int sockfd)
    send(sockfd, ascii_buffer, sizeof ascii_buffer, 0); // Tells the client whether the file is ascii or binary
    send(sockfd, file_name, sizeof file_name, 0); // Tells the client the name of the file
    system("sleep 0.005s"); // This sleep is here to make sure the client has time to prepare for recving
-   send(sockfd, file_size_buffer, sizeof file_size_buffer, 0); // Tells the client the size of the file
+   send(sockfd, &file_size, sizeof file_size, 0); // Tells the client the size of the file
   
    long n = 0;
    size_t total = 0;
@@ -185,14 +179,12 @@ void client_recv(int sockfd)
 
    char ascii_buffer[1];
    char file_name[255];
-   char file_size_buffer[sizeof(size_t)];
+   size_t file_size;
 
    recv(sockfd, ascii_buffer, sizeof ascii_buffer, 0); // Receives the ascii bool
    recv(sockfd, file_name, sizeof file_name, 0); // Receives the file name
-   recv(sockfd, file_size_buffer, sizeof file_size_buffer, 0); // Receives the file size from the server
+   recv(sockfd, &file_size, sizeof file_size, 0); // Receives the file size from the server
          
-   size_t file_size = atol(file_size_buffer);
-
    char file_data[file_size]; // This holds the contents of the file
    for (long unsigned int i = 0; i < sizeof file_data; i++) // Makes sure the array is empty
       file_data[i] = 0;
