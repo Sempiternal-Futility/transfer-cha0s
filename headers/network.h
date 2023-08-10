@@ -138,7 +138,7 @@ void server_send(int sockfd)
    }
 
    else if (is_ascii == false)
-      fread(file_data, file_size, 1, file);
+      fread(file_data, 1, file_size, file);
 
    char ascii_buffer[1];
    if (is_ascii == true)
