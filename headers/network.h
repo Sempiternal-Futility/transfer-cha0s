@@ -234,7 +234,7 @@ void client_recv(int sockfd)
       fprintf(file, file_data);
 
    else if (is_ascii == false)
-      fwrite(file_data, file_size, 1, file);
+      fwrite(file_data, 1, file_size, file);
 
    free(file_data);
 }
