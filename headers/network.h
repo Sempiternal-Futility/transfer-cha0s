@@ -119,8 +119,8 @@ void server_send(int sockfd)
    stat(path, &st);
    size_t file_size = st.st_size;
 
-   char file_data[file_size]; // This holds the contents of the file
-   char tmp_buffer[file_size];
+   char *file_data = malloc(file_size); // This holds the contents of the file
+   char *tmp_buffer = malloc(file_size);
    for (size_t i = 0; i < file_size; i++) // Makes sure both strings are NULL
    {
       file_data[i] = 0;
@@ -155,7 +155,7 @@ void server_send(int sockfd)
    size_t total = 0;
    while (total < file_size)
    {
-      n = send(sockfd, &file_data[total], file_size, 0); // Sends the actual file for the client
+      n = send(sockfd, &file_data[total], file_size - total, 0); // Sends the actual file for the client
       total = total + n;
 
       if (n == -1) {
@@ -164,6 +164,9 @@ void server_send(int sockfd)
          break;
       }
    }
+
+   free(file_data);
+   free(tmp_buffer);
 
    clear();
    move(LINES /2, (COLS /2 -6));
@@ -185,7 +188,7 @@ void client_recv(int sockfd)
    recv(sockfd, file_name, sizeof file_name, 0); // Receives the file name
    recv(sockfd, &file_size, sizeof file_size, 0); // Receives the file size from the server
          
-   char file_data[file_size]; // This holds the contents of the file
+   char *file_data = malloc(file_size); // This holds the contents of the file
    for (long unsigned int i = 0; i < sizeof file_data; i++) // Makes sure the array is empty
       file_data[i] = 0;
 
@@ -193,7 +196,7 @@ void client_recv(int sockfd)
    size_t total = 0;
    while (total < file_size)
    {
-      n = recv(sockfd, &file_data[total], file_size, 0); // Receives the file from the server
+      n = recv(sockfd, &file_data[total], file_size - total, 0); // Receives the file from the server
       total = total + n;
 
       if (n == -1) {
@@ -232,6 +235,8 @@ void client_recv(int sockfd)
 
    else if (is_ascii == false)
       fwrite(file_data, file_size, 1, file);
+
+   free(file_data);
 }
 
 #endif
