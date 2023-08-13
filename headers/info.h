@@ -6,6 +6,7 @@
 #include <ncurses.h>
 #include <string.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #include "style.h"
 
 bool ask_host_type() // Asks if the host is a server or a client
@@ -40,79 +41,49 @@ bool ask_host_type() // Asks if the host is a server or a client
 
 void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr_in *client) // Gets the IPv4 address of the host
 {
-   clear();
-
-   if (is_server == true)
-      print_center("WHAT IS THE IP ADDRESS OF THIS MACHINE?", 0, 39);
-   
-   else
-      print_center("WHAT IS THE IP ADDRESS OF THE SERVER?", 0, 37);
-
-   print_center("(IPv4)", 1, 6);
-
-   move((LINES /2 +3), (COLS /2 -6));
-
-   char input = ' ';
-   char ip_addr_string[16];
-
-   for (short i = 0; i < 16; i++) // Fills the array with the ip address
-   {
-      input = getch();
-
-      if (input == '\n') {
-         ip_addr_string[i] = 0; // Takes the \0 terminating string character out
-         break;
-      }
-
-      else if (input == 8 || input == 127) { // Erases if backspace is pressed
-         if (i > 0) {
-            i -= 1;
-            ip_addr_string[i] = 0;
-            move(LINES /2 +3, COLS /2 -6 +i);
-            printw("%c", ' ');
-            i -= 1;
-         }
-
-         else
-            i -= 1;
-      }
-
-      else {
-         move(LINES /2 +3, COLS /2 -6 +i);
-         printw("%c", input);
-         ip_addr_string[i] = input;
-      }
+   FILE *ip_file = fopen("./.config/ip_addr.conf", "r+");
+   struct stat st;
+   if (stat(".config/ip_addr.conf", &st) == -1) // stat() returns -1 if the file doesn't exist
+   { 
+      system("touch .config/ip_addr.conf"); // Creates the file
+      stat(".config/ip_addr.conf", &st); // Reruns stat, so that it's not corrupted
+      ip_file = fopen("./.config/ip_addr.conf", "r+"); // Reruns fopen, so that it's corrupted
    }
 
-   inet_pton(AF_INET, ip_addr_string, &(server->sin_addr));
-
-   if (is_server == true) // If the host is a server, this will ask the ip of the client too
+   if (st.st_size == 0) // Checks if the file is empty
    {
       clear();
-      print_center("WHAT IS THE IP ADDRESS OF THE CLIENT?", 0, 37);
+
+      if (is_server == true)
+         print_center("WHAT IS THE IP ADDRESS OF THIS MACHINE?", 0, 39);
+   
+      else
+         print_center("WHAT IS THE IP ADDRESS OF THE SERVER?", 0, 37);
+
       print_center("(IPv4)", 1, 6);
 
       move((LINES /2 +3), (COLS /2 -6));
-   
-      input = ' ';
-      char ip_addr_string_two[16];
 
-      for (short i = 0; i < 16; i++)
+      char input = ' ';
+      char ip_addr_string[16];
+
+      for (short i = 0; i < 16; i++) // Fills the array with the ip address
       {
          input = getch();
+
          if (input == '\n') {
-            ip_addr_string_two[i] = 0; // Takes the \0 terminating string character out
+            ip_addr_string[i] = 0; // Takes the \0 terminating string character out
             break;
          }
 
-         else if (input == 8 || input == 127) {
+         else if (input == 8 || input == 127) { // Erases if backspace is pressed
             if (i > 0) {
                i -= 1;
-               ip_addr_string_two[i] = 0;
+               ip_addr_string[i] = 0;
                move(LINES /2 +3, COLS /2 -6 +i);
                printw("%c", ' ');
                i -= 1;
-            }         
+            }
 
             else
                i -= 1;
@@ -121,11 +92,72 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
          else {
             move(LINES /2 +3, COLS /2 -6 +i);
             printw("%c", input);
-            ip_addr_string_two[i] = input;
+            ip_addr_string[i] = input;
          }
       }
 
-      inet_pton(AF_INET, ip_addr_string_two, &(client->sin_addr));
+      inet_pton(AF_INET, ip_addr_string, &(server->sin_addr));
+
+      if (is_server == true) // If the host is a server, this will ask the ip of the client too
+      {
+         clear();
+         print_center("WHAT IS THE IP ADDRESS OF THE CLIENT?", 0, 37);
+         print_center("(IPv4)", 1, 6);
+
+         move((LINES /2 +3), (COLS /2 -6));
+   
+         input = ' ';
+         char ip_addr_string_two[16];
+
+         for (short i = 0; i < 16; i++)
+         {
+            input = getch();
+            if (input == '\n') {
+               ip_addr_string_two[i] = 0; // Takes the \0 terminating string character out
+               break;
+            }
+
+            else if (input == 8 || input == 127) {
+               if (i > 0) {
+                  i -= 1;
+                  ip_addr_string_two[i] = 0;
+                  move(LINES /2 +3, COLS /2 -6 +i);
+                  printw("%c", ' ');
+                  i -= 1;
+               }         
+
+               else
+                  i -= 1;
+            }
+
+            else {
+               move(LINES /2 +3, COLS /2 -6 +i);
+               printw("%c", input);
+               ip_addr_string_two[i] = input;
+            }
+         }
+
+         inet_pton(AF_INET, ip_addr_string_two, &(client->sin_addr));
+         fprintf(ip_file, "%s\n%s\n", ip_addr_string, ip_addr_string_two);
+      }
+   }
+
+   else if (st.st_size != 0) // Checks if the file is not empty
+   {
+      char ip_buffer[36];
+      char second_buffer[36]; // Contains the second ip address
+
+      memset(ip_buffer, 0, sizeof ip_buffer);
+      memset(second_buffer, 0, sizeof second_buffer);
+
+      while (!feof(ip_file)) {
+         strcat(ip_buffer, second_buffer);
+         fgets(second_buffer, sizeof second_buffer, ip_file);
+      }
+      
+      char *first_ip = strtok(ip_buffer, "\n"); // Contains the first ip address
+      inet_pton(AF_INET, first_ip, &(server->sin_addr));
+      inet_pton(AF_INET, second_buffer, &(client->sin_addr));
    }
 }
 
