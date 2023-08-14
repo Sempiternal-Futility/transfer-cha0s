@@ -18,6 +18,8 @@
 void server_send(int sockfd);
 void client_recv(int sockfd);
 
+bool failed_bind = false;
+
 void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in client)
 {
    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -44,6 +46,7 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
       if (bind(sockfd, (struct sockaddr *)&server, sizeof server) < 0) {
          move(LINES /2, (COLS /2 -7));
          fprintf(stderr, "ERROR ON BIND!\n");
+         failed_bind = true;
          getch();
          endwin();
          exit(1);
@@ -147,9 +150,13 @@ void server_send(int sockfd)
       ascii_buffer[0] = '0';
 
 
-   if (ip_config_empty == true)
-      send(sockfd, ip_addrs, 40, 0); // Sends both ip addresses to client
-   
+   if (ip_config_empty == true && failed_bind == false) // Writes the ip addresses to the config file
+   {
+      send(sockfd, ip_addrs, 40, 0); // Sends both ip addresses to the client, so he can write on his machine too
+      FILE *ip_file = fopen("./.config/ip_addr.conf", "w");
+      fprintf(ip_file, ip_addrs);
+   }
+
    send(sockfd, ascii_buffer, sizeof ascii_buffer, 0); // Tells the client whether the file is ascii or binary
    send(sockfd, file_name, sizeof file_name, 0); // Tells the client the name of the file
    system("sleep 0.005s"); // This sleep is here to make sure the client has time to prepare for recving
@@ -188,7 +195,7 @@ void client_recv(int sockfd)
    char file_name[255];
    size_t file_size;
 
-   if (ip_config_empty == true)
+   if (ip_config_empty == true && failed_bind == false)
    {
       FILE *ip_file = fopen("./.config/ip_addr.conf", "w");
       char *ip_config = malloc(40);

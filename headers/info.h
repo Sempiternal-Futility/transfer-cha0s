@@ -144,7 +144,6 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
 
 
          inet_pton(AF_INET, ip_addr_string_two, &(client->sin_addr));
-         fprintf(ip_file, "%s\n%s\n", ip_addr_string, ip_addr_string_two);      
 
          ip_addrs = malloc(40);
          strcat(ip_addrs, ip_addr_string);

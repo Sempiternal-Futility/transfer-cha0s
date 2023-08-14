@@ -8,7 +8,7 @@
 #include "../headers/info.h"
 
 //TODO: 
-//      Send both ip addresses to client, so he doesn't have to type it
+//      Check if both ip config files match. If they are different states, throw warning!
 //      Create a .config folder on the first time the program executes
 //      Add a manual the first the program executes
 //      break the for loop in "is_file_ascii" after knowing for sure the file type
