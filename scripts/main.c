@@ -8,7 +8,9 @@
 #include "../headers/info.h"
 
 //TODO: 
-//      Read ip address on line 145 on info.h
+//      Send both ip addresses to client, so he doesn't have to type it
+//      Create a .config folder on the first time the program executes
+//      Add a manual the first the program executes
 //      break the for loop in "is_file_ascii" after knowing for sure the file type
 //      Once i am able to copy folders, add little animation while the program is busy
 
@@ -39,6 +41,7 @@ int main()
 
    free(server);
    free(client);
+   free(ip_addrs);
    endwin();
    return 0;
 }

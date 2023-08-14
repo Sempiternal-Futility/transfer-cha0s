@@ -146,6 +146,10 @@ void server_send(int sockfd)
    else if (is_ascii == false)
       ascii_buffer[0] = '0';
 
+
+   if (ip_config_empty == true)
+      send(sockfd, ip_addrs, 40, 0); // Sends both ip addresses to client
+   
    send(sockfd, ascii_buffer, sizeof ascii_buffer, 0); // Tells the client whether the file is ascii or binary
    send(sockfd, file_name, sizeof file_name, 0); // Tells the client the name of the file
    system("sleep 0.005s"); // This sleep is here to make sure the client has time to prepare for recving
@@ -183,6 +187,15 @@ void client_recv(int sockfd)
    char ascii_buffer[1];
    char file_name[255];
    size_t file_size;
+
+   if (ip_config_empty == true)
+   {
+      FILE *ip_file = fopen("./.config/ip_addr.conf", "w");
+      char *ip_config = malloc(40);
+      recv(sockfd, ip_config, 40, 0); // Receives both ip addresses
+      fprintf(ip_file, ip_config);
+      free(ip_config);
+   }
 
    recv(sockfd, ascii_buffer, sizeof ascii_buffer, 0); // Receives the ascii bool
    recv(sockfd, file_name, sizeof file_name, 0); // Receives the file name

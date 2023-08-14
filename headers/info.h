@@ -7,7 +7,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <stdbool.h>
 #include "style.h"
+
+char *ip_addrs;
+bool ip_config_empty;
 
 bool ask_host_type() // Asks if the host is a server or a client
 {
@@ -53,6 +57,7 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
    if (st.st_size == 0) // Checks if the file is empty
    {
       clear();
+      ip_config_empty = true;
 
       if (is_server == true)
          print_center("WHAT IS THE IP ADDRESS OF THIS MACHINE?", 0, 39);
@@ -137,13 +142,20 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
             }
          }
 
+
          inet_pton(AF_INET, ip_addr_string_two, &(client->sin_addr));
-         fprintf(ip_file, "%s\n%s\n", ip_addr_string, ip_addr_string_two);
+         fprintf(ip_file, "%s\n%s\n", ip_addr_string, ip_addr_string_two);      
+
+         ip_addrs = malloc(40);
+         strcat(ip_addrs, ip_addr_string);
+         ip_addrs[strlen(ip_addrs)] = '\n';
+         strcat(ip_addrs, ip_addr_string_two);
       }
    }
 
    else if (st.st_size != 0) // Checks if the file is not empty
    {
+      ip_config_empty = false;
       char ip_buffer[36];
       char second_buffer[36]; // Contains the second ip address
 
