@@ -1,11 +1,16 @@
 // This header file handles things about config files
+#ifndef CONFIG_H
 #define CONFIG_H
-#ifdef CONFIG_H
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <sys/stat.h>
+
+bool failed_bind = false;
+char *ip_addrs;
+bool ip_config_empty;
 
 bool enable_ip_save = false; // If true, ip addresses will get saved to a file, so user doesn't have to type again (disabled default since buggy)
 
@@ -48,6 +53,14 @@ void read_main_config() // Reads the main config file and assigns the bool accor
       enable_ip_save = true;
 
    fclose(config);
+}
+
+void assign_ip_addrs(char *ip_addr_string, char *ip_addr_string_two) // Assings a value to ip_addrs
+{
+   ip_addrs = malloc(40);
+   strcat(ip_addrs, ip_addr_string);
+   ip_addrs[strlen(ip_addrs)] = '\n';
+   strcat(ip_addrs, ip_addr_string_two);
 }
 
 #endif

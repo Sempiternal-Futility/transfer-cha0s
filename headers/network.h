@@ -12,13 +12,12 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <libgen.h>
+#include "config.h"
 #include "info.h"
 #include "style.h"
 
 void server_send(int sockfd);
 void client_recv(int sockfd);
-
-bool failed_bind = false;
 
 void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in client)
 {

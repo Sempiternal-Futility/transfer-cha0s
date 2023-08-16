@@ -8,10 +8,8 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <stdbool.h>
+#include "config.h"
 #include "style.h"
-
-char *ip_addrs;
-bool ip_config_empty;
 
 bool ask_host_type() // Asks if the host is a server or a client
 {
@@ -158,10 +156,11 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
 
          inet_pton(AF_INET, ip_addr_string_two, &(client->sin_addr));
 
-         ip_addrs = malloc(40);
+         /*ip_addrs = malloc(40);
          strcat(ip_addrs, ip_addr_string);
          ip_addrs[strlen(ip_addrs)] = '\n';
-         strcat(ip_addrs, ip_addr_string_two);
+         strcat(ip_addrs, ip_addr_string_two);*/
+         assign_ip_addrs(ip_addr_string, ip_addr_string_two); 
       }
    }
 
