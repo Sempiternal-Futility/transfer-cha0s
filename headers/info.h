@@ -45,16 +45,29 @@ bool ask_host_type() // Asks if the host is a server or a client
 
 void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr_in *client) // Gets the IPv4 address of the host
 {
-   FILE *ip_file = fopen("./.config/ip_addr.conf", "r+");
-   struct stat st;
-   if (stat(".config/ip_addr.conf", &st) == -1) // stat() returns -1 if the file doesn't exist
-   { 
-      system("touch .config/ip_addr.conf"); // Creates the file
-      stat(".config/ip_addr.conf", &st); // Reruns stat, so that it's not corrupted
-      ip_file = fopen("./.config/ip_addr.conf", "r+"); // Reruns fopen, so that it's corrupted
+   bool empty_file = true;
+
+   if (enable_ip_save == true) // If ip saving option is enabled
+   {
+      FILE *ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "r+");
+      struct stat st;
+      if (stat("./.config/transfer-of-cha0s-conf/ip_addr.conf", &st) == -1) // stat() returns -1 if the file doesn't exist
+      { 
+         system("touch ./.config/transfer-of-cha0s-conf/ip_addr.conf"); // Creates the file
+         stat("./.config/transfer-of-cha0s-conf/ip_addr.conf", &st); // Reruns stat, so that it's not corrupted
+         ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "r+"); // Reruns fopen, so that it's not corrupted
+      }
+      else 
+      {
+         if (st.st_size == 0)
+            empty_file = true;
+   
+         else if (st.st_size != 0)
+            empty_file = false;
+      }
    }
 
-   if (st.st_size == 0) // Checks if the file is empty
+   if (empty_file == true) // Checks if the .conf file is empty
    {
       clear();
       ip_config_empty = true;
@@ -152,8 +165,9 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
       }
    }
 
-   else if (st.st_size != 0) // Checks if the file is not empty
+   else if (empty_file == false) // Checks if the file is not empty
    {
+      FILE *ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "r+");
       ip_config_empty = false;
       char ip_buffer[36];
       char second_buffer[36]; // Contains the second ip address

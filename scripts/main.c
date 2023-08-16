@@ -4,15 +4,9 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "../headers/config.h"
 #include "../headers/network.h"
 #include "../headers/info.h"
-
-//TODO: 
-//      Check if both ip config files match. If they are different states, throw warning!
-//      Create a .config folder on the first time the program executes
-//      Add a manual the first the program executes
-//      break the for loop in "is_file_ascii" after knowing for sure the file type
-//      Once i am able to copy folders, add little animation while the program is busy
 
 int main()
 {
@@ -20,6 +14,8 @@ int main()
    initscr(); 
    curs_set(0);
    noecho();
+
+   read_main_config(); // Reads the main .conf file
 
    struct sockaddr_in *server = malloc(sizeof(struct sockaddr_in));
    struct sockaddr_in *client = malloc(sizeof(struct sockaddr_in));
