@@ -149,12 +149,8 @@ void server_send(int sockfd)
       ascii_buffer[0] = '0';
 
 
-   if (enable_ip_save == true && ip_config_empty == true && failed_bind == false) // Writes the ip addresses to the config file
-   {
-      send(sockfd, ip_addrs, 40, 0); // Sends both ip addresses to the client, so he can write on his machine too
-      FILE *ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "w");
-      fprintf(ip_file, ip_addrs);
-   }
+   if (enable_ip_save == true && ip_config_empty == true && failed_bind == false) // These are global vars btw
+      send_ip(sockfd); // Sends the ip addresses to the client (so he can save it on his machine), and also writes the ip's to this machine
 
    send(sockfd, ascii_buffer, sizeof ascii_buffer, 0); // Tells the client whether the file is ascii or binary
    send(sockfd, file_name, sizeof file_name, 0); // Tells the client the name of the file
@@ -194,14 +190,8 @@ void client_recv(int sockfd)
    char file_name[255];
    size_t file_size;
 
-   if (enable_ip_save == true && ip_config_empty == true && failed_bind == false)
-   {
-      FILE *ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "w");
-      char *ip_config = malloc(40);
-      recv(sockfd, ip_config, 40, 0); // Receives both ip addresses
-      fprintf(ip_file, ip_config);
-      free(ip_config);
-   }
+   if (enable_ip_save == true && ip_config_empty == true && failed_bind == false) // These are global vars btw
+      recv_ip(sockfd); // Receives the ip addresses from the server and writes it to this machine
 
    recv(sockfd, ascii_buffer, sizeof ascii_buffer, 0); // Receives the ascii bool
    recv(sockfd, file_name, sizeof file_name, 0); // Receives the file name

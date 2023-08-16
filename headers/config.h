@@ -55,12 +55,28 @@ void read_main_config() // Reads the main config file and assigns the bool accor
    fclose(config);
 }
 
-void assign_ip_addrs(char *ip_addr_string, char *ip_addr_string_two) // Assings a value to ip_addrs
+void assign_ip_addrs(char *ip_addr_string, char *ip_addr_string_two) // Assings the ip addresses to "ip_addrs"
 {
    ip_addrs = malloc(40);
    strcat(ip_addrs, ip_addr_string);
    ip_addrs[strlen(ip_addrs)] = '\n';
    strcat(ip_addrs, ip_addr_string_two);
+}
+
+void send_ip(int sockfd) // Sends the ip addresses to the client (so he can save it on his machine), and also writes the ip to this machine
+{
+   send(sockfd, ip_addrs, 40, 0); // Sends both ip addresses to the client, so he can write on his machine too
+   FILE *ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "w");
+   fprintf(ip_file, ip_addrs);
+}
+
+void recv_ip(int sockfd) // Receives the ip addresses from the server, and also writes the ip to this machine
+{
+   FILE *ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "w");
+   char *ip_config = malloc(40);
+   recv(sockfd, ip_config, 40, 0);
+   fprintf(ip_file, ip_config);
+   free(ip_config);
 }
 
 #endif
