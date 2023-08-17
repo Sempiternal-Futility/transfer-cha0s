@@ -121,6 +121,8 @@ void server_send(int sockfd)
    stat(path, &st);
    size_t file_size = st.st_size;
 
+   clear(); print_center("ALLOCATING BUFFERS...", 0, 21);
+
    char *file_data = malloc(file_size); // This holds the contents of the file
    char *tmp_buffer = malloc(file_size);
    for (size_t i = 0; i < file_size; i++) // Makes sure both strings are NULL
@@ -128,6 +130,8 @@ void server_send(int sockfd)
       file_data[i] = 0;
       tmp_buffer[i] = 0;
    }
+
+   clear(); print_center("READING FILE...", 0, 15);
 
    if (is_ascii == true)
    {
@@ -148,6 +152,7 @@ void server_send(int sockfd)
    else if (is_ascii == false)
       ascii_buffer[0] = '0';
 
+   print_transfer_message(file_size);
 
    if (enable_ip_save == true && is_ip_conf_empty == true && failed_bind == false) // These are global vars btw
       send_ip(sockfd); // Sends the ip addresses to the client (so he can save it on his machine), and also writes the ip's to this machine

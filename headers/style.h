@@ -12,4 +12,20 @@ void print_center(char *msg, int y, int x)
    refresh();
 }
 
+void print_transfer_message(size_t file_size)
+{
+   if (file_size > 326547080)
+   {
+      clear(); 
+      print_center("TRANSFERING...", 0, 14);
+      print_center("(this may take some time)", 1, 25);
+   }
+
+   else
+   {
+      clear(); 
+      print_center("TRANSFERING...", 0, 14);
+   }
+}
+
 #endif
