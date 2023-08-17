@@ -124,12 +124,13 @@ void server_send(int sockfd)
    clear(); print_center("ALLOCATING BUFFERS...", 0, 21);
 
    char *file_data = malloc(file_size); // This holds the contents of the file
-   char *tmp_buffer = malloc(file_size);
-   for (size_t i = 0; i < file_size; i++) // Makes sure both strings are NULL
-   {
-      file_data[i] = 0;
-      tmp_buffer[i] = 0;
-   }
+   char *tmp_buffer = 0; 
+   if (is_ascii == true)
+      tmp_buffer = malloc(file_size);
+
+   memset(file_data, 0, file_size);
+   if (is_ascii == true)
+      memset(tmp_buffer, 0, file_size);
 
    clear(); print_center("READING FILE...", 0, 15);
 
@@ -178,11 +179,6 @@ void server_send(int sockfd)
 
    free(file_data);
    free(tmp_buffer);
-
-   clear();
-   move(LINES /2, (COLS /2 -6));
-   printw("Bytes sent: %zu\n", total);
-   getch();
 }
 
 void client_recv(int sockfd)
@@ -201,10 +197,14 @@ void client_recv(int sockfd)
    recv(sockfd, ascii_buffer, sizeof ascii_buffer, 0); // Receives the ascii bool
    recv(sockfd, file_name, sizeof file_name, 0); // Receives the file name
    recv(sockfd, &file_size, sizeof file_size, 0); // Receives the file size from the server
-         
+
+   clear(); print_center("ALLOCATING BUFFERS...", 0, 21);
+
    char *file_data = malloc(file_size); // This holds the contents of the file
    for (long unsigned int i = 0; i < sizeof file_data; i++) // Makes sure the array is empty
       file_data[i] = 0;
+
+   print_transfer_message(file_size);
 
    long n = 0;
    size_t total = 0;
@@ -232,16 +232,13 @@ void client_recv(int sockfd)
       file_data[strlen(file_data)] = '\n';
    }
 
-   clear();
-   move(LINES /2, (COLS /2 -6));
-   printw("Bytes recv: %zu\n", total);
-   getch();
-
    char *mode;
    if (is_ascii == true)
       mode = "w";
    else if (is_ascii == false)
       mode = "wb";
+
+   clear(); print_center("WRITING FILE...", 0, 18);
 
    FILE *file = fopen(file_name, mode);
    if (is_ascii == true)

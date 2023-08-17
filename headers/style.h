@@ -14,7 +14,7 @@ void print_center(char *msg, int y, int x)
 
 void print_transfer_message(size_t file_size)
 {
-   if (file_size > 326547080)
+   if (file_size > 226547080)
    {
       clear(); 
       print_center("TRANSFERING...", 0, 14);

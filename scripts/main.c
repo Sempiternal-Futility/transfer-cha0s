@@ -33,6 +33,8 @@ int main()
 
    connect_hosts(is_server, *server, *client); // Here I dereference the structs because I can't "bind()" the server struct as a pointer :(
 
+   clear();
+   print_center("DONE!", 0, 5);
    getch();
 
    free(server);
