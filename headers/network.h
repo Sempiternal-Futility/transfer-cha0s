@@ -149,7 +149,7 @@ void server_send(int sockfd)
       ascii_buffer[0] = '0';
 
 
-   if (enable_ip_save == true && ip_config_empty == true && failed_bind == false) // These are global vars btw
+   if (enable_ip_save == true && is_ip_conf_empty == true && failed_bind == false) // These are global vars btw
       send_ip(sockfd); // Sends the ip addresses to the client (so he can save it on his machine), and also writes the ip's to this machine
 
    send(sockfd, ascii_buffer, sizeof ascii_buffer, 0); // Tells the client whether the file is ascii or binary
@@ -190,7 +190,7 @@ void client_recv(int sockfd)
    char file_name[255];
    size_t file_size;
 
-   if (enable_ip_save == true && ip_config_empty == true && failed_bind == false) // These are global vars btw
+   if (enable_ip_save == true && is_ip_conf_empty == true && failed_bind == false) // These are global vars btw
       recv_ip(sockfd); // Receives the ip addresses from the server and writes it to this machine
 
    recv(sockfd, ascii_buffer, sizeof ascii_buffer, 0); // Receives the ascii bool

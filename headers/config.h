@@ -10,7 +10,7 @@
 
 bool failed_bind = false;
 char *ip_addrs;
-bool ip_config_empty;
+bool is_ip_conf_empty;
 
 bool enable_ip_save = false; // If true, ip addresses will get saved to a file, so user doesn't have to type again (disabled default since buggy)
 

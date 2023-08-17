@@ -43,7 +43,7 @@ bool ask_host_type() // Asks if the host is a server or a client
 
 void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr_in *client) // Gets the IPv4 address of the host
 {
-   bool empty_file = true;
+   is_ip_conf_empty = true;
 
    if (enable_ip_save == true) // If ip saving option is enabled
    {
@@ -55,20 +55,20 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
          stat("./.config/transfer-of-cha0s-conf/ip_addr.conf", &st); // Reruns stat, so that it's not corrupted
          ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "r+"); // Reruns fopen, so that it's not corrupted
       }
+
       else 
       {
          if (st.st_size == 0)
-            empty_file = true;
+            is_ip_conf_empty = true;
    
          else if (st.st_size != 0)
-            empty_file = false;
+            is_ip_conf_empty = false;
       }
    }
 
-   if (empty_file == true) // Checks if the .conf file is empty
+   if (is_ip_conf_empty == true) // Checks if the .conf file is empty
    {
       clear();
-      ip_config_empty = true;
 
       if (is_server == true)
          print_center("WHAT IS THE IP ADDRESS OF THIS MACHINE?", 0, 39);
@@ -160,10 +160,9 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
       }
    }
 
-   else if (empty_file == false) // Checks if the file is not empty
+   else if (is_ip_conf_empty == false) // Checks if the file is not empty
    {
       FILE *ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "r+");
-      ip_config_empty = false;
       char ip_buffer[36];
       char second_buffer[36]; // Contains the second ip address
 
