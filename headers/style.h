@@ -31,8 +31,32 @@ void print_transfer_message(size_t file_size)
 void intro_manual()
 {
    clear();
-   print_center("MANUAL BB!!!!", 0, 13); 
-   getch(); 
+   print_center("PRESS ANY KEY TO READ THE MANUAL", 0, 32);
+   getch();
+
+   clear();
+   printw("STEPS OF THE PROGRAM:\n\n");
+   printw("1 STEP: ANSWER IF THE HOST IS A SERVER OR A CLIENT.\n");
+   printw("THE SERVER IS THE ONE WHO SENDS, AND THE CLIENT IS THE ONE WHO RECEIVES.\n\n");
+   printw("2 STEP: TYPE IN YOUR IP ADDRESS.\n");
+   printw("IF YOU DON'T KNOW IT, OPEN A TERMINAL AND TYPE 'ip address'\n\n");
+   printw("3 STEP: TYPE THE PATH OF THE FILE TO BE SENT.");
+   getch();
+
+   clear();
+   printw("OPTIONS:\n\n");
+   printw("FOR NOW ONLY 1 OPTION IS AVAILABLE:\n");
+   printw("YOU CAN CHOOSE TO SAVE THE LAST GIVEN IP ADDRESS TO THIS MACHINE, INSTEAD OF TYPING.\n");
+   printw("(disabled by default, since it's EXTREMELY buggy, recommend if only 2 hosts are going to be ever used)");
+   getch();
+
+   clear();
+   printw("KNOWN BUGS:\n\n");
+   printw("1 BUG: IF YOU TYPE A THE PATH TO A FILE THAT DOESN'T EXIST, A SEGFAULT TAKES PLACE.\n\n");
+   printw("2 BUG: IF THE OPTION TO SAVE IP ADDRESES IS ENABLED, BOTH MACHINES MUST HAVE THE IP CONF FILE AT THE SAME STATE.\n");
+   printw("(so if i delete that file on the server-side, and not delete it on the client-side, a segfault takes place)\n");
+   printw("(if you mess that file up, just return all settings back to default)");
+   getch();
 }
 
 #endif
