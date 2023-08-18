@@ -28,4 +28,11 @@ void print_transfer_message(size_t file_size)
    }
 }
 
+void intro_manual()
+{
+   clear();
+   print_center("MANUAL BB!!!!", 0, 13); 
+   getch(); 
+}
+
 #endif

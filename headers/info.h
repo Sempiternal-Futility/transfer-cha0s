@@ -45,7 +45,7 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
 {
    is_ip_conf_empty = true;
 
-   if (enable_ip_save == true) // If ip saving option is enabled
+   if (conf_enable_ip_save == true) // If ip saving option is enabled
    {
       FILE *ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "r+");
       struct stat st;
