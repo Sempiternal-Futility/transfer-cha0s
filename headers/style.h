@@ -9,6 +9,7 @@ void init_colors()
 {
    start_color();
    init_pair(1, COLOR_WHITE, COLOR_BLACK);
+   init_pair(2, COLOR_BLACK, COLOR_WHITE);
    attron(COLOR_PAIR(1));
    bkgd(COLOR_PAIR(1));
 }
@@ -83,12 +84,82 @@ void display_start_menu() // Displays the start menu when the program is opened
    move(9, COLS /2 -33); printw("            ██║     ██╔══██║██╔══██║████╔╝██║╚════██║              \n");
    move(10, COLS /2 -33); printw("            ╚██████╗██║  ██║██║  ██║╚██████╔╝███████║              \n");
    move(11, COLS /2 -33); printw("             ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝              \n");
-
+   
    print_center("TRANSFER!", +2, 9);
    print_center("OPTIONS", +4, 7);
    print_center("READ MANUAL", +6, 11);
    print_center("QUIT", +8, 4);
 
+   // move(LINES /2 +2, COLS /2 + 4);
+   // move(LINES /2 +4, COLS /2 + 3);
+   // move(LINES /2 +6, COLS /2 + 5);
+   // move(LINES /2 +8, COLS /2 + 1);
+
+   attron(COLOR_PAIR(2));
+   print_center("TRANSFER!", +2, 9);
+
+   short cur_pos = 0; // this is 0 if cursor is on top of "TRANSFER!", this is 1 if on top of "OPTINS", and so on
+   char input = 0;
+   while (input != '\n')
+   {
+      input = getch();
+
+      if (input == 'j' && cur_pos == 0) {
+         attron(COLOR_PAIR(1));
+         print_center("TRANSFER!", +2, 9);
+
+         attron(COLOR_PAIR(2));
+         print_center("OPTIONS", +4, 7);
+         cur_pos = 1;
+      }
+
+      else if (input == 'k' && cur_pos == 1) {
+         attron(COLOR_PAIR(1));
+         print_center("OPTIONS", +4, 7);
+
+         attron(COLOR_PAIR(2));
+         print_center("TRANSFER!", +2, 9);
+         cur_pos = 0;
+      }
+
+      else if (input == 'j' && cur_pos == 1) {
+         attron(COLOR_PAIR(1));
+         print_center("OPTIONS", +4, 7);
+
+         attron(COLOR_PAIR(2));
+         print_center("READ MANUAL", +6, 11);
+         cur_pos = 2;
+      }
+
+      else if (input == 'k' && cur_pos == 2) {
+         attron(COLOR_PAIR(1));
+         print_center("READ MANUAL", +6, 11);
+
+         attron(COLOR_PAIR(2));
+         print_center("OPTIONS", +4, 7);
+         cur_pos = 1;
+      }
+
+      else if (input == 'j' && cur_pos == 2) {
+         attron(COLOR_PAIR(1));
+         print_center("READ MANUAL", +6, 11);
+
+         attron(COLOR_PAIR(2));
+         print_center("QUIT", +8, 4);
+         cur_pos = 3;
+      }
+
+      else if (input == 'k' && cur_pos == 3) {
+         attron(COLOR_PAIR(1));
+         print_center("QUIT", +8, 4);
+
+         attron(COLOR_PAIR(2));
+         print_center("READ MANUAL", +6, 11);
+         cur_pos = 2;
+      }
+   }
+
+   attron(COLOR_PAIR(1));
    getch();
 }
 
