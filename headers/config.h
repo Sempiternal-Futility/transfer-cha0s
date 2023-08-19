@@ -7,13 +7,13 @@
 #include <stdbool.h>
 #include <string.h>
 #include <sys/stat.h>
-#include "style.h"
 
 bool failed_bind = false;
 char *ip_addrs;
 bool is_ip_conf_empty;
 
 bool conf_enable_ip_save = false; // If true, ip addresses will get saved to a file, so user doesn't have to type again (disabled default since buggy)
+bool conf_enable_startmenu = false;
 
 void check_main_config() // Checks if the main config file exists (if not, then creates it with default settings)
 {
@@ -24,7 +24,7 @@ void check_main_config() // Checks if the main config file exists (if not, then 
       system("touch ./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf");
       config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "w");
       
-      fprintf(config, "0");
+      fprintf(config, "01");
    }
 
    fclose(config);
@@ -32,20 +32,29 @@ void check_main_config() // Checks if the main config file exists (if not, then 
 
 void write_main_config() // Checks the value of the conf bools, and then writes the config file
 {
-   char config_buffer[2];
-   memset(config_buffer, 0, strlen(config_buffer));
+   char config_buffer_write[3];
+   memset(config_buffer_write, 0, strlen(config_buffer_write));
 
    switch(conf_enable_ip_save)
    {
-      case true: config_buffer[0] = '1';
+      case true: config_buffer_write[0] = '1';
                  break;
 
-      case false: config_buffer[0] = '0';
+      case false: config_buffer_write[0] = '0';
+                  break;
+   }
+
+   switch(conf_enable_startmenu)
+   {
+      case true: config_buffer_write[1] = '1';
+                 break;
+
+      case false: config_buffer_write[1] = '0';
                   break;
    }
 
    FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "w");
-   fprintf(config, config_buffer);
+   fprintf(config, config_buffer_write);
    fclose(config);
 }
 
@@ -54,19 +63,19 @@ void read_main_config() // Reads the main config file and assigns the bool accor
    check_main_config();
    FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "r");
 
-   char config_buffer[2];
-   char tmp_buffer[2];
+   char config_buffer_read[3];
+   char tmp_buffer[3];
 
-   memset(config_buffer, 0, sizeof config_buffer);
+   memset(config_buffer_read, 0, sizeof config_buffer_read);
    memset(tmp_buffer, 0, sizeof tmp_buffer);
 
    while (!feof(config))
    {
       fgets(tmp_buffer, sizeof tmp_buffer, config);
-      strcat(config_buffer, tmp_buffer);
+      strcat(config_buffer_read, tmp_buffer);
    }
 
-   switch(config_buffer[0])
+   switch(config_buffer_read[0])
    {
       case '1': conf_enable_ip_save = true;
                 break;
@@ -75,8 +84,16 @@ void read_main_config() // Reads the main config file and assigns the bool accor
                 break;
    }
 
+   switch(config_buffer_read[1])
+   {
+      case '1': conf_enable_startmenu = true;
+                break;
+
+      case '0': conf_enable_startmenu = false;
+                break;
+   }
+
    fclose(config);
-   write_main_config();
 }
 
 void assign_ip_addrs(char *ip_addr_string, char *ip_addr_string_two) // Assings the ip addresses to "ip_addrs"
