@@ -59,4 +59,34 @@ void intro_manual()
    getch();
 }
 
+void display_start_menu() // Displays the start menu when the program is opened
+{
+   clear();
+
+   move(0, COLS /2 -33); printw("████████╗██████╗  █████╗ ███╗   ██╗███████╗███████╗███████╗██████╗\n");
+   move(1, COLS /2 -33); printw("╚══██╔══╝██╔══██╗██╔══██╗████╗  ██║██╔════╝██╔════╝██╔════╝██╔══██╗\n");
+   move(2, COLS /2 -33); printw("   ██║   ██████╔╝███████║██╔██╗ ██║███████╗█████╗  █████╗  ██████╔╝\n");
+   move(3, COLS /2 -33); printw("   ██║   ██╔══██╗██╔══██║██║╚██╗██║╚════██║██╔══╝  ██╔══╝  ██╔══██╗\n");
+   move(4, COLS /2 -33); printw("   ██║   ██║  ██║██║  ██║██║ ╚████║███████║██║     ███████╗██║  ██║\n");
+   move(5, COLS /2 -33); printw("   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝\n");
+   move(6, COLS /2 -33); printw("             ██████╗██╗  ██╗ █████╗  ██████╗ ███████╗              \n");
+   move(7, COLS /2 -33); printw("            ██╔════╝██║  ██║██╔══██╗██╔═████╗██╔════╝              \n");
+   move(8, COLS /2 -33); printw("            ██║     ███████║███████║██║██╔██║███████╗              \n");
+   move(9, COLS /2 -33); printw("            ██║     ██╔══██║██╔══██║████╔╝██║╚════██║              \n");
+   move(10, COLS /2 -33); printw("            ╚██████╗██║  ██║██║  ██║╚██████╔╝███████║              \n");
+   move(11, COLS /2 -33); printw("             ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝              \n");
+
+   /*print_center("TRANSFER!", -4, 9);
+   print_center("OPTIONS", -2, 7);
+   print_center("READ MANUAL", 0, 11);
+   print_center("QUIT", 2, 4);*/
+   
+   print_center("TRANSFER!", +2, 9);
+   print_center("OPTIONS", +4, 7);
+   print_center("READ MANUAL", +6, 11);
+   print_center("QUIT", +8, 4);
+
+   getch();
+}
+
 #endif
