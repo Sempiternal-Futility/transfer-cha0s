@@ -13,7 +13,6 @@ bool failed_bind = false;
 char *ip_addrs;
 bool is_ip_conf_empty;
 
-bool conf_first_boot = false; // If the program is booted for the 1st time, this = true
 bool conf_enable_ip_save = false; // If true, ip addresses will get saved to a file, so user doesn't have to type again (disabled default since buggy)
 
 void check_main_config() // Checks if the main config file exists (if not, then creates it with default settings)
@@ -25,7 +24,7 @@ void check_main_config() // Checks if the main config file exists (if not, then 
       system("touch ./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf");
       config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "w");
       
-      fprintf(config, "10");
+      fprintf(config, "0");
    }
 
    fclose(config);
@@ -36,21 +35,12 @@ void write_main_config() // Checks the value of the conf bools, and then writes 
    char config_buffer[2];
    memset(config_buffer, 0, strlen(config_buffer));
 
-   switch(conf_first_boot)
+   switch(conf_enable_ip_save)
    {
       case true: config_buffer[0] = '1';
                  break;
 
       case false: config_buffer[0] = '0';
-                  break;
-   }
-
-   switch(conf_enable_ip_save)
-   {
-      case true: config_buffer[1] = '1';
-                 break;
-
-      case false: config_buffer[1] = '0';
                   break;
    }
 
@@ -64,8 +54,8 @@ void read_main_config() // Reads the main config file and assigns the bool accor
    check_main_config();
    FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "r");
 
-   char config_buffer[10];
-   char tmp_buffer[10];
+   char config_buffer[2];
+   char tmp_buffer[2];
 
    memset(config_buffer, 0, sizeof config_buffer);
    memset(tmp_buffer, 0, sizeof tmp_buffer);
@@ -78,15 +68,6 @@ void read_main_config() // Reads the main config file and assigns the bool accor
 
    switch(config_buffer[0])
    {
-      case '1': conf_first_boot = true;
-                break;
-
-      case '0': conf_first_boot = false;
-                break;
-   }
-
-   switch(config_buffer[1])
-   {
       case '1': conf_enable_ip_save = true;
                 break;
 
@@ -95,19 +76,13 @@ void read_main_config() // Reads the main config file and assigns the bool accor
    }
 
    fclose(config);
-
-   if (conf_first_boot == true)
-   {
-      intro_manual(); // Displays an introduction manual for the user
-      conf_first_boot = false;
-   }
-
    write_main_config();
 }
 
 void assign_ip_addrs(char *ip_addr_string, char *ip_addr_string_two) // Assings the ip addresses to "ip_addrs"
 {
    ip_addrs = malloc(40);
+   memset(ip_addrs, 0, strlen(ip_addrs));
    strcat(ip_addrs, ip_addr_string);
    ip_addrs[strlen(ip_addrs)] = '\n';
    strcat(ip_addrs, ip_addr_string_two);
