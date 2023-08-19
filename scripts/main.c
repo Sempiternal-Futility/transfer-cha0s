@@ -17,7 +17,10 @@ int main()
 
    read_main_config(); // Reads the main .conf file
    init_colors();
-   display_start_menu();
+
+   int n = 1;
+   while (n == 1)
+      n = display_start_menu();
 
    struct sockaddr_in *server = malloc(sizeof(struct sockaddr_in));
    struct sockaddr_in *client = malloc(sizeof(struct sockaddr_in));

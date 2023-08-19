@@ -3,6 +3,7 @@
 #ifndef STYLE_H
 #define STYLE_H
 
+#include <stdlib.h>
 #include <ncurses.h>
 
 void init_colors()
@@ -68,7 +69,7 @@ void intro_manual()
    getch();
 }
 
-void display_start_menu() // Displays the start menu when the program is opened
+int display_start_menu() // Displays the start menu when the program is opened
 {
    clear();
 
@@ -89,11 +90,6 @@ void display_start_menu() // Displays the start menu when the program is opened
    print_center("OPTIONS", +4, 7);
    print_center("READ MANUAL", +6, 11);
    print_center("QUIT", +8, 4);
-
-   // move(LINES /2 +2, COLS /2 + 4);
-   // move(LINES /2 +4, COLS /2 + 3);
-   // move(LINES /2 +6, COLS /2 + 5);
-   // move(LINES /2 +8, COLS /2 + 1);
 
    attron(COLOR_PAIR(2));
    print_center("TRANSFER!", +2, 9);
@@ -160,7 +156,27 @@ void display_start_menu() // Displays the start menu when the program is opened
    }
 
    attron(COLOR_PAIR(1));
-   getch();
+
+   if (cur_pos == 0) // "TRANSFER!" button
+      return 0;
+
+   else if (cur_pos == 1) // "OPTIONS" button
+   {
+      clear();
+      print_center("PRETEND THIS FEATURE IS IMPLEMENTED :)", 0, 38);
+      getch();
+   }
+
+   else if (cur_pos == 2) // "READ MANUAL" button
+      intro_manual();
+
+   else if (cur_pos == 3) // "QUIT" button
+   {
+      endwin();
+      exit(0);
+   }
+
+   return 1;
 }
 
 #endif
