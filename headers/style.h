@@ -5,6 +5,14 @@
 
 #include <ncurses.h>
 
+void init_colors()
+{
+   start_color();
+   init_pair(1, COLOR_WHITE, COLOR_BLACK);
+   attron(COLOR_PAIR(1));
+   bkgd(COLOR_PAIR(1));
+}
+
 void print_center(char *msg, int y, int x)
 {
    move(LINES /2 +y, (COLS /2 -x/2));
@@ -76,11 +84,6 @@ void display_start_menu() // Displays the start menu when the program is opened
    move(10, COLS /2 -33); printw("            ╚██████╗██║  ██║██║  ██║╚██████╔╝███████║              \n");
    move(11, COLS /2 -33); printw("             ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝              \n");
 
-   /*print_center("TRANSFER!", -4, 9);
-   print_center("OPTIONS", -2, 7);
-   print_center("READ MANUAL", 0, 11);
-   print_center("QUIT", 2, 4);*/
-   
    print_center("TRANSFER!", +2, 9);
    print_center("OPTIONS", +4, 7);
    print_center("READ MANUAL", +6, 11);
