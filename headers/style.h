@@ -95,12 +95,22 @@ int display_start_menu() // Displays the start menu when the program is opened
    print_center("TRANSFER!", +2, 9);
 
    short cur_pos = 0; // this is 0 if cursor is on top of "TRANSFER!", this is 1 if on top of "OPTINS", and so on
-   char input = 0;
+   int input = 0;
+   keypad(stdscr, true);
    while (input != '\n')
    {
       input = getch();
 
       if (input == 'j' && cur_pos == 0) {
+         attron(COLOR_PAIR(1));
+         print_center("TRANSFER!", +2, 9);
+
+         attron(COLOR_PAIR(2));
+         print_center("OPTIONS", +4, 7);
+         cur_pos = 1;
+      }
+
+      else if (input == KEY_DOWN && cur_pos == 0) {
          attron(COLOR_PAIR(1));
          print_center("TRANSFER!", +2, 9);
 
@@ -118,7 +128,25 @@ int display_start_menu() // Displays the start menu when the program is opened
          cur_pos = 0;
       }
 
+      else if (input == KEY_UP && cur_pos == 1) {
+         attron(COLOR_PAIR(1));
+         print_center("OPTIONS", +4, 7);
+
+         attron(COLOR_PAIR(2));
+         print_center("TRANSFER!", +2, 9);
+         cur_pos = 0;
+      }
+
       else if (input == 'j' && cur_pos == 1) {
+         attron(COLOR_PAIR(1));
+         print_center("OPTIONS", +4, 7);
+
+         attron(COLOR_PAIR(2));
+         print_center("READ MANUAL", +6, 11);
+         cur_pos = 2;
+      }
+
+      else if (input == KEY_DOWN && cur_pos == 1) {
          attron(COLOR_PAIR(1));
          print_center("OPTIONS", +4, 7);
 
@@ -136,6 +164,15 @@ int display_start_menu() // Displays the start menu when the program is opened
          cur_pos = 1;
       }
 
+      else if (input == KEY_UP && cur_pos == 2) {
+         attron(COLOR_PAIR(1));
+         print_center("READ MANUAL", +6, 11);
+
+         attron(COLOR_PAIR(2));
+         print_center("OPTIONS", +4, 7);
+         cur_pos = 1;
+      }
+
       else if (input == 'j' && cur_pos == 2) {
          attron(COLOR_PAIR(1));
          print_center("READ MANUAL", +6, 11);
@@ -145,7 +182,25 @@ int display_start_menu() // Displays the start menu when the program is opened
          cur_pos = 3;
       }
 
+      else if (input == KEY_DOWN && cur_pos == 2) {
+         attron(COLOR_PAIR(1));
+         print_center("READ MANUAL", +6, 11);
+
+         attron(COLOR_PAIR(2));
+         print_center("QUIT", +8, 4);
+         cur_pos = 3;
+      }
+
       else if (input == 'k' && cur_pos == 3) {
+         attron(COLOR_PAIR(1));
+         print_center("QUIT", +8, 4);
+
+         attron(COLOR_PAIR(2));
+         print_center("READ MANUAL", +6, 11);
+         cur_pos = 2;
+      }
+
+      else if (input == KEY_UP && cur_pos == 3) {
          attron(COLOR_PAIR(1));
          print_center("QUIT", +8, 4);
 
