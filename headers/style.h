@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include <stdlib.h>
+#include <stdbool.h>
 #include <ncurses.h>
 
 void init_colors()
@@ -21,6 +22,18 @@ void print_center(char *msg, int y, int x)
    move(LINES /2 +y, (COLS /2 -x/2));
    printw(msg);
    refresh();
+}
+
+void navigate_button(bool highlight_button, char *button_name, int posY, int posX)
+{
+   if (highlight_button == false)
+      attron(COLOR_PAIR(1));
+
+   else if (highlight_button == true)
+      attron(COLOR_PAIR(2));
+
+   print_center(button_name, posY, posX);
+   attron(COLOR_PAIR(1));
 }
 
 void print_transfer_message(size_t file_size)
@@ -105,110 +118,74 @@ int display_start_menu() // Displays the start menu when the program is opened
          input = getch();
 
          if (input == 'j' && cur_pos == 0) {
-            attron(COLOR_PAIR(1));
-            print_center("TRANSFER!", +2, 9);
-
-            attron(COLOR_PAIR(2));
-            print_center("OPTIONS", +4, 7);
+            navigate_button(false, "TRANSFER!", +2, 9);
+            navigate_button(true, "OPTIONS", +4, 7);
             cur_pos = 1;
          }
 
          else if (input == KEY_DOWN && cur_pos == 0) {
-            attron(COLOR_PAIR(1));
-            print_center("TRANSFER!", +2, 9);
-
-            attron(COLOR_PAIR(2));
-            print_center("OPTIONS", +4, 7);
+            navigate_button(false, "TRANSFER!", +2, 9);
+            navigate_button(true, "OPTIONS", +4, 7);
             cur_pos = 1;
          }
 
          else if (input == 'k' && cur_pos == 1) {
-            attron(COLOR_PAIR(1));
-            print_center("OPTIONS", +4, 7);
-
-            attron(COLOR_PAIR(2));
-            print_center("TRANSFER!", +2, 9);
+            navigate_button(false, "OPTIONS", +4, 7);
+            navigate_button(true, "TRANSFER!", +2, 9);
             cur_pos = 0;
          }
 
          else if (input == KEY_UP && cur_pos == 1) {
-            attron(COLOR_PAIR(1));
-            print_center("OPTIONS", +4, 7);
-
-            attron(COLOR_PAIR(2));
-            print_center("TRANSFER!", +2, 9);
+            navigate_button(false, "OPTIONS", +4, 7);
+            navigate_button(true, "TRANSFER!", +2, 9);
             cur_pos = 0;
          }
 
          else if (input == 'j' && cur_pos == 1) {
-            attron(COLOR_PAIR(1));
-            print_center("OPTIONS", +4, 7);
-
-            attron(COLOR_PAIR(2));
-            print_center("READ MANUAL", +6, 11);
+            navigate_button(false, "OPTIONS", +4, 7);
+            navigate_button(true, "READ MANUAL", +6, 11);
             cur_pos = 2;
          }
 
          else if (input == KEY_DOWN && cur_pos == 1) {
-            attron(COLOR_PAIR(1));
-            print_center("OPTIONS", +4, 7);
-
-            attron(COLOR_PAIR(2));
-            print_center("READ MANUAL", +6, 11);
+            navigate_button(false, "OPTIONS", +4, 7);
+            navigate_button(true, "READ MANUAL", +6, 11);
             cur_pos = 2;
          }
 
          else if (input == 'k' && cur_pos == 2) {
-            attron(COLOR_PAIR(1));
-            print_center("READ MANUAL", +6, 11);
-
-            attron(COLOR_PAIR(2));
-            print_center("OPTIONS", +4, 7);
+            navigate_button(false, "READ MANUAL", +6, 11);
+            navigate_button(true, "OPTIONS", +4, 7);
             cur_pos = 1;
          }
 
          else if (input == KEY_UP && cur_pos == 2) {
-            attron(COLOR_PAIR(1));
-            print_center("READ MANUAL", +6, 11);
-
-            attron(COLOR_PAIR(2));
-            print_center("OPTIONS", +4, 7);
+            navigate_button(false, "READ MANUAL", +6, 11);
+            navigate_button(true, "OPTIONS", +4, 7);
             cur_pos = 1;
          }
 
          else if (input == 'j' && cur_pos == 2) {
-            attron(COLOR_PAIR(1));
-            print_center("READ MANUAL", +6, 11);
-
-            attron(COLOR_PAIR(2));
-            print_center("QUIT", +8, 4);
+            navigate_button(false, "READ MANUAL", +6, 11);
+            navigate_button(true, "QUIT", +8, 4);
             cur_pos = 3;
          }
 
          else if (input == KEY_DOWN && cur_pos == 2) {
-            attron(COLOR_PAIR(1));
-            print_center("READ MANUAL", +6, 11);
-
-            attron(COLOR_PAIR(2));
-            print_center("QUIT", +8, 4);
+            navigate_button(false, "READ MANUAL", +6, 11);
+            navigate_button(true, "QUIT", +8, 4);
             cur_pos = 3;
          }
 
          else if (input == 'k' && cur_pos == 3) {
-            attron(COLOR_PAIR(1));
-            print_center("QUIT", +8, 4);
-
-            attron(COLOR_PAIR(2));
-            print_center("READ MANUAL", +6, 11);
+            navigate_button(false, "QUIT", +8, 4);
+            navigate_button(true, "READ MANUAL", +6, 11);
             cur_pos = 2;
          }
 
          else if (input == KEY_UP && cur_pos == 3) {
-            attron(COLOR_PAIR(1));
-            print_center("QUIT", +8, 4);
-
-            attron(COLOR_PAIR(2));
-            print_center("READ MANUAL", +6, 11);
+            navigate_button(false, "QUIT", +8, 4);
+            navigate_button(true, "READ MANUAL", +6, 11);
             cur_pos = 2;
          }
       }
@@ -220,9 +197,7 @@ int display_start_menu() // Displays the start menu when the program is opened
 
       else if (cur_pos == 1) // "OPTIONS" button
       {
-         clear();
-         print_center("PRETEND THIS FEATURE IS IMPLEMENTED :)", 0, 38);
-         getch();
+         settings_menu(); 
       }
 
       else if (cur_pos == 2) // "READ MANUAL" button

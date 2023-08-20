@@ -7,6 +7,7 @@
 #include "../headers/config.h"
 #include "../headers/network.h"
 #include "../headers/info.h"
+#include "../headers/style.h"
 
 int main()
 {

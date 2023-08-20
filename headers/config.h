@@ -7,6 +7,9 @@
 #include <stdbool.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <ncurses.h>
+
+void print_center(char *msg, int y, int x);
 
 bool failed_bind = false;
 char *ip_addrs;
@@ -119,6 +122,13 @@ void recv_ip(int sockfd) // Receives the ip addresses from the server, and also 
    recv(sockfd, ip_config, 40, 0);
    fprintf(ip_file, ip_config);
    free(ip_config);
+}
+
+void settings_menu()
+{
+   clear();
+   print_center("RESTORE SETTINGS BACK TO DEFAULT", -8, 32);
+   getch();
 }
 
 #endif
