@@ -242,4 +242,17 @@ bool is_file_ascii(char *path)
    return ascii;
 }
 
+bool ask_user_transfer_again()
+{
+   clear();
+   print_center("WANNA TRANSFER AGAIN?", 0, 17);
+
+   char input = getch();
+   if (input == 'y')
+      return true;
+
+   else if (input == 'n')
+      return false;
+}
+
 #endif

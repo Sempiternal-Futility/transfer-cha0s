@@ -36,8 +36,15 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
          exit(1);
       }
 
-      else
+      else {
          client_recv(sockfd);
+
+         bool again = ask_user_transfer_again();
+         while (again == true) {
+            client_recv(sockfd);
+            again = ask_user_transfer_again();
+         }
+      }
    }
 
    else if (is_server == true)
@@ -59,8 +66,15 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
       *size = sizeof(client);
       int sockfd_client = accept(sockfd, (struct sockaddr *)&client, size);
 
-      if (sockfd_client != -1)
+      if (sockfd_client != -1) {
          server_send(sockfd_client);
+
+         bool again = ask_user_transfer_again();
+         while (again == true) {
+            server_send(sockfd_client);
+            again = ask_user_transfer_again();
+         }
+      }
 
       close(sockfd_client);
       free(size);
@@ -178,7 +192,11 @@ void server_send(int sockfd)
    }
 
    free(file_data);
-   free(tmp_buffer);
+   free(tmp_buffer); 
+   
+   clear();
+   print_center("DONE!", 0, 5);
+   getch();
 }
 
 void client_recv(int sockfd)
@@ -247,7 +265,11 @@ void client_recv(int sockfd)
    else if (is_ascii == false)
       fwrite(file_data, 1, file_size, file);
 
-   free(file_data);
+   free(file_data);   
+
+   clear();
+   print_center("DONE!", 0, 5);
+   getch();
 }
 
 #endif
