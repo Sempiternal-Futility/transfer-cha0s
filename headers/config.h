@@ -8,7 +8,6 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <arpa/inet.h>
-#include <ncurses.h>
 
 void print_center(char *msg, int y, int x);
 
@@ -123,71 +122,6 @@ void recv_ip(int sockfd) // Receives the ip addresses from the server, and also 
    recv(sockfd, ip_config, 40, 0);
    fprintf(ip_file, ip_config);
    free(ip_config);
-}
-
-void settings_menu()
-{
-   clear();
-
-   attron(COLOR_PAIR(2));
-   print_center("RESTORE SETTINGS BACK TO DEFAULT", -8, 32);
-   attron(COLOR_PAIR(1));
-   print_center("SAVE IP ADDRESS", -4, 15);
-   print_center("MENU SCREEN", -2, 11);
-   
-   int input = 0;
-   int cur_pos = 0;
-   while (input != '\n')
-   {
-      input = getch();
-      if (input == 'j' && cur_pos == 0) {
-         navigate_button(false, "RESTORE SETTINGS BACK TO DEFAULT", -8, 32);
-         navigate_button(true, "SAVE IP ADDRESS", -4, 15);
-         cur_pos = 1;
-      }
-
-      else if (input == KEY_DOWN && cur_pos == 0) {
-         navigate_button(false, "RESTORE SETTINGS BACK TO DEFAULT", -8, 32);
-         navigate_button(true, "SAVE IP ADDRESS", -4, 15);
-         cur_pos = 1;
-      }
-
-      else if (input == 'k' && cur_pos == 1) {
-         navigate_button(false, "SAVE IP ADDRESS", -4, 15);
-         navigate_button(true, "RESTORE SETTINGS BACK TO DEFAULT", -8, 32);
-         cur_pos = 0;
-      }
-
-      else if (input == KEY_UP && cur_pos == 1) {
-         navigate_button(false, "SAVE IP ADDRESS", -4, 15);
-         navigate_button(true, "RESTORE SETTINGS BACK TO DEFAULT", -8, 32);
-         cur_pos = 0;
-      }
-
-      else if (input == 'j' && cur_pos == 1) {
-         navigate_button(false, "SAVE IP ADDRESS", -4, 15);
-         navigate_button(true, "MENU SCREEN", -2, 11);
-         cur_pos = 2;
-      }
-
-      else if (input == KEY_DOWN && cur_pos == 1) {
-         navigate_button(false, "SAVE IP ADDRESS", -4, 15);
-         navigate_button(true, "MENU SCREEN", -2, 11);
-         cur_pos = 2;
-      }
-
-      else if (input == 'k' && cur_pos == 2) {
-         navigate_button(false, "MENU SCREEN", -2, 11);
-         navigate_button(true, "SAVE IP ADDRESS", -4, 15);
-         cur_pos = 1;
-      }
-
-      else if (input == KEY_UP && cur_pos == 2) {
-         navigate_button(false, "MENU SCREEN", -2, 11);
-         navigate_button(true, "SAVE IP ADDRESS", -4, 15);
-         cur_pos = 1;
-      }
-   }
 }
 
 #endif

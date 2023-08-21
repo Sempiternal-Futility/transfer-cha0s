@@ -83,6 +83,84 @@ void intro_manual()
    getch();
 }
 
+void settings_menu()
+{
+   clear();
+
+   attron(COLOR_PAIR(2));
+   print_center("RESTORE SETTINGS BACK TO DEFAULT", -9, 32);
+   attron(COLOR_PAIR(1));
+   print_center("OPTIONS:", -6, 8);
+   print_center("SAVE IP ADDRESS", -4, 15);
+   print_center("MENU SCREEN", -2, 11);
+   
+   int input = 0;
+   int cur_pos = 0;
+   while (input != '\n')
+   {
+      input = getch();
+      if (input == 'j' && cur_pos == 0) {
+         navigate_button(false, "RESTORE SETTINGS BACK TO DEFAULT", -9, 32);
+         navigate_button(true, "SAVE IP ADDRESS", -4, 15);
+         cur_pos = 1;
+      }
+
+      else if (input == KEY_DOWN && cur_pos == 0) {
+         navigate_button(false, "RESTORE SETTINGS BACK TO DEFAULT", -9, 32);
+         navigate_button(true, "SAVE IP ADDRESS", -4, 15);
+         cur_pos = 1;
+      }
+
+      else if (input == 'k' && cur_pos == 1) {
+         navigate_button(false, "SAVE IP ADDRESS", -4, 15);
+         navigate_button(true, "RESTORE SETTINGS BACK TO DEFAULT", -9, 32);
+         cur_pos = 0;
+      }
+
+      else if (input == KEY_UP && cur_pos == 1) {
+         navigate_button(false, "SAVE IP ADDRESS", -4, 15);
+         navigate_button(true, "RESTORE SETTINGS BACK TO DEFAULT", -9, 32);
+         cur_pos = 0;
+      }
+
+      else if (input == 'j' && cur_pos == 1) {
+         navigate_button(false, "SAVE IP ADDRESS", -4, 15);
+         navigate_button(true, "MENU SCREEN", -2, 11);
+         cur_pos = 2;
+      }
+
+      else if (input == KEY_DOWN && cur_pos == 1) {
+         navigate_button(false, "SAVE IP ADDRESS", -4, 15);
+         navigate_button(true, "MENU SCREEN", -2, 11);
+         cur_pos = 2;
+      }
+
+      else if (input == 'k' && cur_pos == 2) {
+         navigate_button(false, "MENU SCREEN", -2, 11);
+         navigate_button(true, "SAVE IP ADDRESS", -4, 15);
+         cur_pos = 1;
+      }
+
+      else if (input == KEY_UP && cur_pos == 2) {
+         navigate_button(false, "MENU SCREEN", -2, 11);
+         navigate_button(true, "SAVE IP ADDRESS", -4, 15);
+         cur_pos = 1;
+      }
+   }
+
+   if (cur_pos == 0)
+   {
+      FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "w");
+      fprintf(config, "01"); // Prints the default config to the file
+      fclose(config);
+
+      clear();
+      print_center("SETTINGS CHANGED!", 0, 17);
+      print_center("(changes will take effect only once the program is restarted)", 1, 61);
+      getch();
+   }
+}
+
 int display_start_menu() // Displays the start menu when the program is opened
 {
    if (conf_enable_startmenu == true)

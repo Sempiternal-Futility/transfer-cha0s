@@ -69,6 +69,7 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
    if (is_ip_conf_empty == true) // Checks if the .conf file is empty
    {
       clear();
+      keypad(stdscr, false); // I (for some reason) have to disable keypad if i want to use backsapce to erase
 
       if (is_server == true)
          print_center("WHAT IS THE IP ADDRESS OF THIS MACHINE?", 0, 39);
