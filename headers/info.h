@@ -247,11 +247,47 @@ bool ask_user_transfer_again()
    clear();
    print_center("WANNA TRANSFER AGAIN?", 0, 17);
 
-   char input = getch();
-   if (input == 'y')
+   attron(COLOR_PAIR(2));
+   print_center("YES", 2, 6);
+   attron(COLOR_PAIR(1));
+   print_center("NO", 2, -8);
+
+   int input = 0;
+   int cur_pos = 0;
+   keypad(stdscr, true);
+   while (input != '\n')
+   {
+      input = getch();
+
+      if (input == 'l' && cur_pos == 0) {
+         navigate_button(false, "YES", 2, 6);
+         navigate_button(true, "NO", 2, -8);
+         cur_pos = 1;
+      }
+
+      else if (input == KEY_RIGHT && cur_pos == 0) {
+         navigate_button(false, "YES", 2, 6);
+         navigate_button(true, "NO", 2, -8);
+         cur_pos = 1;
+      }
+
+      else if (input == 'h' && cur_pos == 1) {
+         navigate_button(false, "NO", 2, -8);
+         navigate_button(true, "YES", 2, 6);
+         cur_pos = 0;
+      }
+
+      else if (input == KEY_LEFT && cur_pos == 1) {
+         navigate_button(false, "NO", 2, -8);
+         navigate_button(true, "YES", 2, 6);
+         cur_pos = 0;
+      }
+   }
+
+   if (cur_pos == 0)
       return true;
 
-   else if (input == 'n')
+   else
       return false;
 }
 
