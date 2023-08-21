@@ -3,6 +3,7 @@
 #ifndef INFO_H
 #define INFO_H
 
+#include <curses.h>
 #include <ncurses.h>
 #include <string.h>
 #include <stdio.h>
@@ -14,31 +15,51 @@
 bool ask_host_type() // Asks if the host is a server or a client
 {
    clear();
-   print_center("IS THIS MACHINE A SERVER?", 0, 25);
-   print_center("(y/n)", 1, 5);
+   print_center("IS THIS MACHINE A SERVER OR A CLIENT?", 0, 36);
 
-   char answer = getch();
-   switch(answer)
+   attron(COLOR_PAIR(2));
+   print_center("SERVER", 2, 20);
+
+   attron(COLOR_PAIR(1));
+   print_center("CLIENT", 2, -8);
+
+   int input = 0;
+   int cur_pos = 0;
+   keypad(stdscr, true);
+   while(input != '\n')
    {
-      case 'y':
-         return true;
-         break;
+      input = getch();
 
-      case 'Y':
-         return true;
-         break;
+      if (input == 'l' && cur_pos == 0) {
+         navigate_button(false, "SERVER", 2, 20);
+         navigate_button(true, "CLIENT", 2, -8);
+         cur_pos = 1;
+      }
 
-      case 'n':
-         return false;
-         break;
+      else if (input == KEY_RIGHT && cur_pos == 0) {
+         navigate_button(false, "SERVER", 2, 20);
+         navigate_button(true, "CLIENT", 2, -8);
+         cur_pos = 1;
+      }
 
-      case 'N':
-         return false;
-         break;
+      else if (input == 'h' && cur_pos == 1) {
+         navigate_button(false, "CLIENT", 2, -8);
+         navigate_button(true, "SERVER", 2, 20);
+         cur_pos = 0;
+      }
 
-      default:
-         ask_host_type(); // Loop function
+      else if (input == KEY_LEFT && cur_pos == 1) {
+         navigate_button(false, "CLIENT", 2, -8);
+         navigate_button(true, "SERVER", 2, 20);
+         cur_pos = 0;
+      }
    }
+
+   if (cur_pos == 0)
+      return true;
+
+   else
+      return false;
 }
 
 void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr_in *client) // Gets the IPv4 address of the host
