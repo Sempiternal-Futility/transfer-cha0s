@@ -186,6 +186,33 @@ void settings_menu()
       print_center("(changes will take effect only once the program is restarted)", 1, 61);
       getch();
    }
+
+   else if (cur_pos == 2)
+   {
+      char buffer[3];
+      FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "r");
+      fgets(buffer, sizeof(buffer), config);
+
+      if (conf_enable_startmenu == true)
+         buffer[1] = '0'; // If the config is enabled, then it gets disabled
+
+      else if (conf_enable_startmenu == false)
+         buffer[1] = '1'; // If config is disabled, then it gets enabled
+   
+      config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "w");
+      fprintf(config, buffer);
+      fclose(config);
+
+      clear();
+      if (buffer[1] == '0')
+         print_center("FEATURE DISABLED!", 0, 17);
+
+      else if (buffer[1] == '1')
+         print_center("FEATURE ENABLED!", 0, 16);
+
+      print_center("(changes will take effect only once the program is restarted)", 1, 61);
+      getch();
+   }
 }
 
 int display_start_menu() // Displays the start menu when the program is opened
