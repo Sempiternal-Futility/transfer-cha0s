@@ -93,6 +93,7 @@ void settings_menu()
    print_center("OPTIONS:", -6, 8);
    print_center("SAVE IP ADDRESS", -4, 15);
    print_center("MENU SCREEN", -2, 11);
+   print_center("\"TRANSFER AGAIN\" PROMPT", 0, 23);
    
    int input = 0;
    int cur_pos = 0;
@@ -146,12 +147,36 @@ void settings_menu()
          navigate_button(true, "SAVE IP ADDRESS", -4, 15);
          cur_pos = 1;
       }
+
+      else if (input == 'j' && cur_pos == 2) {
+         navigate_button(false, "MENU SCREEN", -2, 11);
+         navigate_button(true, "\"TRANSFER AGAIN\" PROMPT", 0, 23);
+         cur_pos = 3;
+      }
+
+      else if (input == KEY_DOWN && cur_pos == 2) {
+         navigate_button(false, "MENU SCREEN", -2, 11);
+         navigate_button(true, "\"TRANSFER AGAIN\" PROMPT", 0, 23);
+         cur_pos = 3;
+      }
+
+      else if (input == 'k' && cur_pos == 3) {
+         navigate_button(false, "\"TRANSFER AGAIN\" PROMPT", 0, 23);
+         navigate_button(true, "MENU SCREEN", -2, 11);
+         cur_pos = 2;
+      }
+
+      else if (input == KEY_UP && cur_pos == 3) {
+         navigate_button(false, "\"TRANSFER AGAIN\" PROMPT", 0, 23);
+         navigate_button(true, "MENU SCREEN", -2, 11);
+         cur_pos = 2;
+      }
    }
 
    if (cur_pos == 0)
    {
       FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "w");
-      fprintf(config, "01"); // Prints the default config to the file
+      fprintf(config, "010"); // Prints the default config to the file
       fclose(config);
 
       clear();
@@ -162,7 +187,7 @@ void settings_menu()
 
    else if (cur_pos == 1)
    {
-      char buffer[3];
+      char buffer[4];
       FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "r");
       fgets(buffer, sizeof(buffer), config);
 
@@ -189,7 +214,7 @@ void settings_menu()
 
    else if (cur_pos == 2)
    {
-      char buffer[3];
+      char buffer[4];
       FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "r");
       fgets(buffer, sizeof(buffer), config);
 
@@ -208,6 +233,32 @@ void settings_menu()
          print_center("FEATURE DISABLED!", 0, 17);
 
       else if (buffer[1] == '1')
+         print_center("FEATURE ENABLED!", 0, 16);
+
+      print_center("(changes will take effect only once the program is restarted)", 1, 61);
+      getch();
+   }
+
+   else if (cur_pos == 3) {
+      char buffer[4];
+      FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "r");
+      fgets(buffer, sizeof(buffer), config);
+
+      if (conf_enable_transfer_again == true)
+         buffer[2] = '0'; // If the config is enabled, then it gets disabled
+
+      else if (conf_enable_transfer_again == false)
+         buffer[2] = '1'; // If config is disabled, then it gets enabled
+   
+      config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "w");
+      fprintf(config, buffer);
+      fclose(config);
+
+      clear();
+      if (buffer[2] == '0')
+         print_center("FEATURE DISABLED!", 0, 17);
+
+      else if (buffer[2] == '1')
          print_center("FEATURE ENABLED!", 0, 16);
 
       print_center("(changes will take effect only once the program is restarted)", 1, 61);

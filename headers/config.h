@@ -17,6 +17,7 @@ bool is_ip_conf_empty;
 
 bool conf_enable_ip_save = false; // If true, ip addresses will get saved to a file, so user doesn't have to type again (disabled default since buggy)
 bool conf_enable_startmenu = false;
+bool conf_enable_transfer_again = false;
 
 void check_main_config() // Checks if the main config file exists (if not, then creates it with default settings)
 {
@@ -27,7 +28,7 @@ void check_main_config() // Checks if the main config file exists (if not, then 
       system("touch ./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf");
       config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "w");
       
-      fprintf(config, "01");
+      fprintf(config, "010");
    }
 
    fclose(config);
@@ -35,10 +36,10 @@ void check_main_config() // Checks if the main config file exists (if not, then 
 
 void write_main_config() // Checks the value of the conf bools, and then writes the config file
 {
-   char config_buffer_write[3];
+   char config_buffer_write[4];
    memset(config_buffer_write, 0, strlen(config_buffer_write));
 
-   switch(conf_enable_ip_save)
+   switch (conf_enable_ip_save)
    {
       case true: config_buffer_write[0] = '1';
                  break;
@@ -47,12 +48,21 @@ void write_main_config() // Checks the value of the conf bools, and then writes 
                   break;
    }
 
-   switch(conf_enable_startmenu)
+   switch (conf_enable_startmenu)
    {
       case true: config_buffer_write[1] = '1';
                  break;
 
       case false: config_buffer_write[1] = '0';
+                  break;
+   }
+
+   switch (conf_enable_transfer_again)
+   {
+      case true: config_buffer_write[2] = '1';
+                 break;
+
+      case false: config_buffer_write[2] = '0';
                   break;
    }
 
@@ -66,8 +76,8 @@ void read_main_config() // Reads the main config file and assigns the bool accor
    check_main_config();
    FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "r");
 
-   char config_buffer_read[3];
-   char tmp_buffer[3];
+   char config_buffer_read[4];
+   char tmp_buffer[4];
 
    memset(config_buffer_read, 0, sizeof config_buffer_read);
    memset(tmp_buffer, 0, sizeof tmp_buffer);
@@ -78,7 +88,7 @@ void read_main_config() // Reads the main config file and assigns the bool accor
       strcat(config_buffer_read, tmp_buffer);
    }
 
-   switch(config_buffer_read[0])
+   switch (config_buffer_read[0])
    {
       case '1': conf_enable_ip_save = true;
                 break;
@@ -87,12 +97,21 @@ void read_main_config() // Reads the main config file and assigns the bool accor
                 break;
    }
 
-   switch(config_buffer_read[1])
+   switch (config_buffer_read[1])
    {
       case '1': conf_enable_startmenu = true;
                 break;
 
       case '0': conf_enable_startmenu = false;
+                break;
+   }
+
+   switch (config_buffer_read[2])
+   {
+      case '1': conf_enable_transfer_again = true;
+                break;
+
+      case '0': conf_enable_transfer_again = false;
                 break;
    }
 
