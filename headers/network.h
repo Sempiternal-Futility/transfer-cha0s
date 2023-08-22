@@ -206,7 +206,7 @@ void client_recv(int sockfd)
    print_center("SERVER IS CHOOSING A FILE TO SEND...", 1, 34);
 
    char ascii_buffer[1];
-   char file_name[255];
+   char *file_name = calloc(1, 255);
    size_t file_size;
 
    if (conf_enable_ip_save == true && is_ip_conf_empty == true && failed_bind == false) // These are global vars btw
@@ -265,6 +265,7 @@ void client_recv(int sockfd)
    else if (is_ascii == false)
       fwrite(file_data, 1, file_size, file);
 
+   free(file_name);
    free(file_data);   
 
    clear();
