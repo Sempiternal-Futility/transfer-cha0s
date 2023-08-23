@@ -10,3 +10,4 @@ Some of the features i plan on implementing are:
 2- Add a list of things to send and then send it all at once
 3- While typing the path to a file, have a "list" button that can kind of "ls" the current directory
 4- Add different color schemes
+5- Use the "~/.config" instead of its own
