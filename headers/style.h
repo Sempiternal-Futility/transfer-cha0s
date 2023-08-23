@@ -59,27 +59,50 @@ void intro_manual()
    getch();
 
    clear();
-   printw("STEPS OF THE PROGRAM:\n\n");
-   printw("1 STEP: ANSWER IF THE HOST IS A SERVER OR A CLIENT.\n");
-   printw("THE SERVER IS THE ONE WHO SENDS, AND THE CLIENT IS THE ONE WHO RECEIVES.\n\n");
-   printw("2 STEP: TYPE IN YOUR IP ADDRESS.\n");
-   printw("IF YOU DON'T KNOW IT, OPEN A TERMINAL AND TYPE 'ip address'\n\n");
-   printw("3 STEP: TYPE THE PATH OF THE FILE TO BE SENT.");
+   print_center("STEPS OF THE PROGRAM:", -6, 21);
+
+   print_center("STEP 1: ANSWER IF THE HOST IS A SERVER OR A CLIENT.", -4, 51);
+   print_center("(the server is the one who sends, and the client is the one who receives).", -3, 74);
+
+   print_center("STEP 2: TYPE IN YOUR IP ADDRESS.", 0, 32);
+   print_center("(if you don't know it, open a terminal and type \"ip address\")", 1, 61);
+
+   print_center("STEP 3: TYPE THE PATH OF THE FILE TO BE SENT.", 4, 45);
    getch();
 
    clear();
-   printw("OPTIONS:\n\n");
-   printw("FOR NOW ONLY 1 OPTION IS AVAILABLE:\n");
-   printw("YOU CAN CHOOSE TO SAVE THE LAST GIVEN IP ADDRESS TO THIS MACHINE, INSTEAD OF TYPING.\n");
-   printw("(disabled by default, since it's EXTREMELY buggy, recommend if only 2 hosts are going to be ever used)");
+   print_center("OPTIONS:", -10, 8);
+   print_center("(these are options that you can enable/disable to your liking)", -9, 62);
+
+   print_center("OPTION 1: WHETHER OR NOT YOU WANT TO SAVE THE IP ADDRESSES FOR QUICK ACCESS", -6, 75);
+   print_center("(disabled by default, since it's very buggy)", -5, 44);
+
+   print_center("OPTION 2: ENABLE OR DISABLE MENU SCREEN TUI", -2, 43);
+   print_center("(if disabled, you won't have the tui menu. so you lose the \"OPTIONS\" button. TAKE CARE)", -1, 89);
+
+   print_center("OPTION 3: WHETHER OR NOT YOU WANT TO SEND MORE FILES OR TO QUIT THE PROGRAM", 2, 79);
+   print_center("(disabled by default)", 3, 21);
+
+   print_center("REMEMBER! IF YOU SCREW EVERYTHING UP AND NEED THE DEFAULT SETTINGS", 6, 66);
+   print_center("JUST DELETE THE MAIN CONFIG FILE AND LAUNCH THE PROGRAM AGAIN", 7, 61);
    getch();
 
    clear();
-   printw("KNOWN BUGS:\n\n");
-   printw("1 BUG: IF YOU TYPE A THE PATH TO A FILE THAT DOESN'T EXIST, A SEGFAULT TAKES PLACE.\n\n");
-   printw("2 BUG: IF THE OPTION TO SAVE IP ADDRESES IS ENABLED, BOTH MACHINES MUST HAVE THE IP CONF FILE AT THE SAME STATE.\n");
-   printw("(so if i delete that file on the server-side, and not delete it on the client-side, a segfault takes place)\n");
-   printw("(if you mess that file up, just return all settings back to default)");
+   print_center("KNOWN BUGS:", -11, 11);
+   
+   print_center("BUG 1: SUPPLYING THE PATH TO A FILE THAT DOESN'T EXIST WILL RESULT IN A SEGFAULT", -8, 80);
+
+   print_center("BUG 2: IF THE IP ADDR SAVE OPTION IS ENABLED, BOTH HOSTS MUST HAVE THE CONF FILE AT THE SAME STATE", -5, 98);
+   print_center("what i mean by \"state\" is, either both hosts have the config file empty", -4, 64);
+   print_center("or both hosts have the config file filled with valid data", -3, 50);
+
+   print_center("BUG 3: SUPPLYING A FILE THAT HAS A NAME THAT HAS A SIZE BIGGER THAN 255 BYTES WILL CAUSE A CRASH", 0, 96);
+   print_center("(this is because i malloc the \"file_name\" buffer in the client-side with only 255 bytes)", 1, 88);
+
+   print_center("BUG 4: SUPPLYING A FILE THAT HAS A SIZE BIGGER THAN", 4, 51);
+   print_center("THE AMOUNT OF RAM ON THE SYSTEM WILL CAUSE A TOTAL CRASH", 5, 56);
+
+   print_center("BE AWARE THAT THESE ARE ONLY THE KNOWN BUGS. THAT ARE THE UNKNOWN TOO :)", 8, 72);
    getch();
 }
 
