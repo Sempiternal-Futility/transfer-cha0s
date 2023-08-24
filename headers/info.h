@@ -68,13 +68,13 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
 
    if (_conf_enable_ip_save == true) // If ip saving option is enabled
    {
-      FILE *ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "r+");
+      FILE *ip_file = fopen(_path_ipconf, "r+");
       struct stat st;
-      if (stat("./.config/transfer-of-cha0s-conf/ip_addr.conf", &st) == -1) // stat() returns -1 if the file doesn't exist
+      if (stat(_path_ipconf, &st) == -1) // stat() returns -1 if the file doesn't exist
       { 
-         system("touch ./.config/transfer-of-cha0s-conf/ip_addr.conf"); // Creates the file
-         stat("./.config/transfer-of-cha0s-conf/ip_addr.conf", &st); // Reruns stat, so that it's not corrupted
-         ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "r+"); // Reruns fopen, so that it's not corrupted
+         system("touch ./.config/transfer-cha0s/ip_addr.conf"); // Creates the file
+         stat(_path_ipconf, &st); // Reruns stat, so that it's not corrupted
+         ip_file = fopen(_path_ipconf, "r+"); // Reruns fopen, so that it's not corrupted
       }
 
       else 
@@ -184,7 +184,7 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
 
    else if (_is_ip_conf_empty == false) // Checks if the file is not empty
    {
-      FILE *ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "r+");
+      FILE *ip_file = fopen(_path_ipconf, "r+");
       char ip_buffer[36];
       char second_buffer[36]; // Contains the second ip address
 

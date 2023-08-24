@@ -11,6 +11,9 @@
 
 void print_center(char *msg, int y, int x);
 
+const char *_path_mainconf = "./.config/transfer-cha0s/transfer-cha0s.conf";
+const char *_path_ipconf = "./.config/transfer-of-cha0s/ip_addr.conf";
+
 bool _failed_bind = false;
 char *_ip_addrs;
 bool _is_ip_conf_empty;
@@ -21,12 +24,12 @@ bool _conf_enable_transfer_again = false;
 
 void check_main_config() // Checks if the main config file exists (if not, then creates it with default settings)
 {
-   FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "r+");
+   FILE *config = fopen(_path_mainconf, "r+");
    struct stat st;
-   if (stat("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", &st) == -1) // stat() returns -1 if the file doesn't exist
+   if (stat(_path_mainconf, &st) == -1) // stat() returns -1 if the file doesn't exist
    {
-      system("touch ./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf");
-      config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "w");
+      system("touch ./.config/transfer-cha0s/transfer-cha0s.conf");
+      config = fopen(_path_mainconf, "w");
       
       fprintf(config, "010");
    }
@@ -37,7 +40,7 @@ void check_main_config() // Checks if the main config file exists (if not, then 
 void write_main_config() // Checks the value of the conf bools, and then writes the config file
 {
    char config_buffer_write[4];
-   memset(config_buffer_write, 0, strlen(config_buffer_write));
+   memset(config_buffer_write, 0, 4);
 
    switch (_conf_enable_ip_save)
    {
@@ -66,7 +69,7 @@ void write_main_config() // Checks the value of the conf bools, and then writes 
                   break;
    }
 
-   FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "w");
+   FILE *config = fopen(_path_mainconf, "w");
    fprintf(config, config_buffer_write);
    fclose(config);
 }
@@ -74,7 +77,7 @@ void write_main_config() // Checks the value of the conf bools, and then writes 
 void read_main_config() // Reads the main config file and assigns the bool accordingly
 {
    check_main_config();
-   FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "r");
+   FILE *config = fopen(_path_mainconf, "r");
 
    char config_buffer_read[4];
    char tmp_buffer[4];
@@ -130,13 +133,13 @@ void assign_ip_addrs(char *ip_addr_string, char *ip_addr_string_two) // Assings 
 void send_ip(int sockfd) // Sends the ip addresses to the client (so he can save it on his machine), and also writes the ip to this machine
 {
    send(sockfd, _ip_addrs, 40, 0); // Sends both ip addresses to the client, so he can write on his machine too
-   FILE *ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "w");
+   FILE *ip_file = fopen(_path_ipconf, "w");
    fprintf(ip_file, _ip_addrs);
 }
 
 void recv_ip(int sockfd) // Receives the ip addresses from the server, and also writes the ip to this machine
 {
-   FILE *ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "w");
+   FILE *ip_file = fopen(_path_ipconf, "w");
    char *ip_config = malloc(40);
    recv(sockfd, ip_config, 40, 0);
    fprintf(ip_file, ip_config);

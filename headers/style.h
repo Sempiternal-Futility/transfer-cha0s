@@ -198,7 +198,7 @@ void settings_menu()
 
    if (cur_pos == 0)
    {
-      FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "w");
+      FILE *config = fopen(_path_mainconf, "w");
       fprintf(config, "010"); // Prints the default config to the file
       fclose(config);
 
@@ -211,7 +211,7 @@ void settings_menu()
    else if (cur_pos == 1)
    {
       char buffer[4];
-      FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "r");
+      FILE *config = fopen(_path_mainconf, "r");
       fgets(buffer, sizeof(buffer), config);
 
       if (_conf_enable_ip_save == true)
@@ -220,7 +220,7 @@ void settings_menu()
       else if (_conf_enable_ip_save == false)
          buffer[0] = '1'; // If config is disabled, then it gets enabled
    
-      config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "w");
+      config = fopen(_path_mainconf, "w");
       fprintf(config, buffer);
       fclose(config);
 
@@ -238,7 +238,7 @@ void settings_menu()
    else if (cur_pos == 2)
    {
       char buffer[4];
-      FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "r");
+      FILE *config = fopen(_path_mainconf, "r");
       fgets(buffer, sizeof(buffer), config);
 
       if (_conf_enable_startmenu == true)
@@ -247,7 +247,7 @@ void settings_menu()
       else if (_conf_enable_startmenu == false)
          buffer[1] = '1'; // If config is disabled, then it gets enabled
    
-      config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "w");
+      config = fopen(_path_mainconf, "w");
       fprintf(config, buffer);
       fclose(config);
 
@@ -264,7 +264,7 @@ void settings_menu()
 
    else if (cur_pos == 3) {
       char buffer[4];
-      FILE *config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "r");
+      FILE *config = fopen(_path_mainconf, "r");
       fgets(buffer, sizeof(buffer), config);
 
       if (_conf_enable_transfer_again == true)
@@ -273,7 +273,7 @@ void settings_menu()
       else if (_conf_enable_transfer_again == false)
          buffer[2] = '1'; // If config is disabled, then it gets enabled
    
-      config = fopen("./.config/transfer-of-cha0s-conf/transfer-of-cha0s.conf", "w");
+      config = fopen(_path_mainconf, "w");
       fprintf(config, buffer);
       fclose(config);
 
