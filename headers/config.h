@@ -11,13 +11,13 @@
 
 void print_center(char *msg, int y, int x);
 
-bool failed_bind = false;
-char *ip_addrs;
-bool is_ip_conf_empty;
+bool _failed_bind = false;
+char *_ip_addrs;
+bool _is_ip_conf_empty;
 
-bool conf_enable_ip_save = false; // If true, ip addresses will get saved to a file, so user doesn't have to type again (disabled default since buggy)
-bool conf_enable_startmenu = false;
-bool conf_enable_transfer_again = false;
+bool _conf_enable_ip_save = false; // If true, ip addresses will get saved to a file, so user doesn't have to type again (disabled default since buggy)
+bool _conf_enable_startmenu = false;
+bool _conf_enable_transfer_again = false;
 
 void check_main_config() // Checks if the main config file exists (if not, then creates it with default settings)
 {
@@ -39,7 +39,7 @@ void write_main_config() // Checks the value of the conf bools, and then writes 
    char config_buffer_write[4];
    memset(config_buffer_write, 0, strlen(config_buffer_write));
 
-   switch (conf_enable_ip_save)
+   switch (_conf_enable_ip_save)
    {
       case true: config_buffer_write[0] = '1';
                  break;
@@ -48,7 +48,7 @@ void write_main_config() // Checks the value of the conf bools, and then writes 
                   break;
    }
 
-   switch (conf_enable_startmenu)
+   switch (_conf_enable_startmenu)
    {
       case true: config_buffer_write[1] = '1';
                  break;
@@ -57,7 +57,7 @@ void write_main_config() // Checks the value of the conf bools, and then writes 
                   break;
    }
 
-   switch (conf_enable_transfer_again)
+   switch (_conf_enable_transfer_again)
    {
       case true: config_buffer_write[2] = '1';
                  break;
@@ -90,28 +90,28 @@ void read_main_config() // Reads the main config file and assigns the bool accor
 
    switch (config_buffer_read[0])
    {
-      case '1': conf_enable_ip_save = true;
+      case '1': _conf_enable_ip_save = true;
                 break;
 
-      case '0': conf_enable_ip_save = false;
+      case '0': _conf_enable_ip_save = false;
                 break;
    }
 
    switch (config_buffer_read[1])
    {
-      case '1': conf_enable_startmenu = true;
+      case '1': _conf_enable_startmenu = true;
                 break;
 
-      case '0': conf_enable_startmenu = false;
+      case '0': _conf_enable_startmenu = false;
                 break;
    }
 
    switch (config_buffer_read[2])
    {
-      case '1': conf_enable_transfer_again = true;
+      case '1': _conf_enable_transfer_again = true;
                 break;
 
-      case '0': conf_enable_transfer_again = false;
+      case '0': _conf_enable_transfer_again = false;
                 break;
    }
 
@@ -120,18 +120,18 @@ void read_main_config() // Reads the main config file and assigns the bool accor
 
 void assign_ip_addrs(char *ip_addr_string, char *ip_addr_string_two) // Assings the ip addresses to "ip_addrs"
 {
-   ip_addrs = malloc(40);
-   memset(ip_addrs, 0, strlen(ip_addrs));
-   strcat(ip_addrs, ip_addr_string);
-   ip_addrs[strlen(ip_addrs)] = '\n';
-   strcat(ip_addrs, ip_addr_string_two);
+   _ip_addrs = malloc(40);
+   memset(_ip_addrs, 0, strlen(_ip_addrs));
+   strcat(_ip_addrs, ip_addr_string);
+   _ip_addrs[strlen(_ip_addrs)] = '\n';
+   strcat(_ip_addrs, ip_addr_string_two);
 }
 
 void send_ip(int sockfd) // Sends the ip addresses to the client (so he can save it on his machine), and also writes the ip to this machine
 {
-   send(sockfd, ip_addrs, 40, 0); // Sends both ip addresses to the client, so he can write on his machine too
+   send(sockfd, _ip_addrs, 40, 0); // Sends both ip addresses to the client, so he can write on his machine too
    FILE *ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "w");
-   fprintf(ip_file, ip_addrs);
+   fprintf(ip_file, _ip_addrs);
 }
 
 void recv_ip(int sockfd) // Receives the ip addresses from the server, and also writes the ip to this machine

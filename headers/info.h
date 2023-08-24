@@ -64,9 +64,9 @@ bool ask_host_type() // Asks if the host is a server or a client
 
 void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr_in *client) // Gets the IPv4 address of the host
 {
-   is_ip_conf_empty = true;
+   _is_ip_conf_empty = true;
 
-   if (conf_enable_ip_save == true) // If ip saving option is enabled
+   if (_conf_enable_ip_save == true) // If ip saving option is enabled
    {
       FILE *ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "r+");
       struct stat st;
@@ -80,14 +80,14 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
       else 
       {
          if (st.st_size == 0)
-            is_ip_conf_empty = true;
+            _is_ip_conf_empty = true;
    
          else if (st.st_size != 0)
-            is_ip_conf_empty = false;
+            _is_ip_conf_empty = false;
       }
    }
 
-   if (is_ip_conf_empty == true) // Checks if the .conf file is empty
+   if (_is_ip_conf_empty == true) // Checks if the .conf file is empty
    {
       clear();
       keypad(stdscr, false); // I (for some reason) have to disable keypad if i want to use backsapce to erase
@@ -182,7 +182,7 @@ void get_host_ipaddr(bool is_server, struct sockaddr_in *server, struct sockaddr
       }
    }
 
-   else if (is_ip_conf_empty == false) // Checks if the file is not empty
+   else if (_is_ip_conf_empty == false) // Checks if the file is not empty
    {
       FILE *ip_file = fopen("./.config/transfer-of-cha0s-conf/ip_addr.conf", "r+");
       char ip_buffer[36];
@@ -244,7 +244,7 @@ bool is_file_ascii(char *path)
 
 bool ask_user_transfer_again()
 {
-   if (conf_enable_transfer_again == true)
+   if (_conf_enable_transfer_again == true)
    {
       clear();
       print_center("DO YOU WANT TO TRANSFER AGAIN?", 0, 30);

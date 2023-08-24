@@ -41,7 +41,7 @@ int main()
 
    free(server);
    free(client);
-   free(ip_addrs);
+   free(_ip_addrs);
    endwin();
    return 0;
 }

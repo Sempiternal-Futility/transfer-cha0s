@@ -52,7 +52,7 @@ void connect_hosts(bool is_server, struct sockaddr_in server, struct sockaddr_in
       if (bind(sockfd, (struct sockaddr *)&server, sizeof server) < 0) {
          move(LINES /2, (COLS /2 -7));
          fprintf(stderr, "ERROR ON BIND!\n");
-         failed_bind = true;
+         _failed_bind = true;
          getch();
          endwin();
          exit(1);
@@ -169,7 +169,7 @@ void server_send(int sockfd)
 
    print_transfer_message(file_size);
 
-   if (conf_enable_ip_save == true && is_ip_conf_empty == true && failed_bind == false) // These are global vars btw
+   if (_conf_enable_ip_save == true && _is_ip_conf_empty == true && _failed_bind == false) // These are global vars btw
       send_ip(sockfd); // Sends the ip addresses to the client (so he can save it on his machine), and also writes the ip's to this machine
 
    send(sockfd, ascii_buffer, sizeof ascii_buffer, 0); // Tells the client whether the file is ascii or binary
@@ -209,7 +209,7 @@ void client_recv(int sockfd)
    char *file_name = calloc(1, 255);
    size_t file_size;
 
-   if (conf_enable_ip_save == true && is_ip_conf_empty == true && failed_bind == false) // These are global vars btw
+   if (_conf_enable_ip_save == true && _is_ip_conf_empty == true && _failed_bind == false) // These are global vars btw
       recv_ip(sockfd); // Receives the ip addresses from the server and writes it to this machine
 
    recv(sockfd, ascii_buffer, sizeof ascii_buffer, 0); // Receives the ascii bool
