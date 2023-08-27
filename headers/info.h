@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <stdbool.h>
+#include <unistd.h>
 #include "config.h"
 #include "style.h"
 
@@ -292,6 +293,48 @@ bool ask_user_transfer_again()
       else
          return false;
    }
+}
+
+bool is_path_file(const char *path)
+{   
+   int  stdout_bk; //is fd for stdout backup
+
+   stdout_bk = dup(fileno(stdout));
+
+   int pipefd[2];
+   pipe2(pipefd, 0); // O_NONBLOCK);
+
+   // What used to be stdout will now go to the pipe.
+   dup2(pipefd[1], fileno(stdout));
+
+   char buffer[510];
+   snprintf(buffer, sizeof buffer, "file -b %s", path);
+   system(buffer);
+   fflush(stdout);//flushall();
+   write(pipefd[1], "good-bye", 9); // null-terminated string!
+   close(pipefd[1]);
+
+   dup2(stdout_bk, fileno(stdout));//restore
+
+   char buf[101];
+   read(pipefd[0], buf, 100);
+
+   bool is_file = true;
+   for (size_t i = 0; i < strlen(buf); i++)
+   {
+      if (buf[i] == 'd')
+         if (buf[i+1] == 'i')
+            if (buf[i+2] == 'r')
+               if (buf[i+3] == 'e')
+                  if (buf[i+4] == 'c')
+                     if (buf[i+5] == 't')
+                        if (buf[i+6] == 'o')
+                           if (buf[i+7] == 'r')
+                              if (buf[i+8] == 'y')
+                                 is_file = false;
+   }
+
+   return is_file;
 }
 
 #endif

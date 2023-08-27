@@ -122,6 +122,8 @@ void server_send(int sockfd)
 
    char *file_name = basename(path);
    bool is_ascii = is_file_ascii(path);
+   bool is_file = is_path_file(path);
+
    char *mode;
 
    if (is_ascii == true)
